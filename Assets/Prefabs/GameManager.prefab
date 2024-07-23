@@ -57,6 +57,16 @@ MonoBehaviour:
   - {fileID: 3865762272846328721, guid: dc79bfe6db679ae47b59f38aac936b90, type: 3}
   - {fileID: 6015396590627464687, guid: 1cf9f789ae0ba1a4a86243843fa66c4d, type: 3}
   - {fileID: 2348080502331919965, guid: 4d709463f8fe21845b2780f6c40b0f32, type: 3}
+  CeilingTiles:
+  - {fileID: 7051428572768812878, guid: 620c0be2094e7fe4cb5d2b36b5b3a247, type: 3}
+  - {fileID: 7051428572768812878, guid: 8c7b8525bcf8fde4d9fe0ba29da389ba, type: 3}
+  - {fileID: 6292757027278701894, guid: 25335e9d433c9ae45a234ab2678699d8, type: 3}
+  - {fileID: 6452154238071740054, guid: 1b6193e2d38d30746a9fa511ea4a89ab, type: 3}
+  - {fileID: 6452154238071740054, guid: adaa8fad3f99f2c4fbf89c47c2c5f534, type: 3}
+  - {fileID: 6119102389248039207, guid: b66b1ed83bf2ecb40a40dec78a8ddc76, type: 3}
+  - {fileID: 6119102389248039207, guid: 097689a386aa3c147bb9b49c667b5879, type: 3}
+  - {fileID: 7391542800814569070, guid: 24e411e4e57c21443a42fff5051cdf6d, type: 3}
+  VoidTile: {fileID: 2774524058477166581, guid: 379eb02be92d1b044b7ce6799747b3f7, type: 3}
 --- !u!114 &4101887192996539098
 MonoBehaviour:
   m_ObjectHideFlags: 0

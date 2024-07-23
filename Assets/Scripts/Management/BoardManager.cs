@@ -25,6 +25,8 @@ public class BoardManager : MonoBehaviour
     public GameObject[] floorTiles;
     //public GameObject[] enemyTiles;
     public GameObject[] wallTiles;
+    public GameObject[] CeilingTiles;
+    public GameObject VoidTile;
 
     private Transform boardHolder;
     private List <Vector3> gridPositions = new List<Vector3> ();
@@ -45,21 +47,69 @@ public class BoardManager : MonoBehaviour
     void BoardSetup()
     {
         boardHolder = new GameObject ("Board").transform;
+        GameObject toInstantiate = VoidTile;
 
-        for(int x = -1; x < columns + 1;x++)
+        for (int x = -1; x < columns + 2; x++)
         {
-            for(int y = -1; y < rows + 1; y++)
+            for(int y = -1; y < rows + 2; y++)
             {
-                GameObject toInstantiate = floorTiles[Random.Range (0, floorTiles.Length)];
-                if(x == -1||x == columns||y == -1||y == rows)
                 {
-                    toInstantiate = wallTiles[Random.Range (0, wallTiles.Length)];
+                toInstantiate = VoidTile;
+                if ((x < columns && x > -1)&&(y < rows && y > -1))
+                {
+                    toInstantiate = floorTiles[Random.Range (0, floorTiles.Length)];
+                }
+                if((x != columns + 1) && ( y != rows + 1))
+                {
+                    if((x == -1 || x == columns) || (y == -1 || y == rows))
+                    {
+                        toInstantiate = wallTiles[Random.Range (0, wallTiles.Length)];
+                    }
                 }
 
                 GameObject instance = Instantiate (toInstantiate, new Vector3(x,y,0f)
                     , Quaternion.identity) as GameObject;
 
-                instance.transform.SetParent(boardHolder);
+                    instance.transform.SetParent(boardHolder);
+                }
+                {
+                    toInstantiate = VoidTile;
+                    if ((x == -1 || x == columns)&&(y != -1 && y < rows + 1))
+                    {
+                        toInstantiate = CeilingTiles[2];
+                    }
+                    {
+                        if ((x == -1) && (y == 0))
+                        {
+                            toInstantiate = CeilingTiles[5];
+                        }
+                        if ((x == columns) && (y == 0))
+                        {
+                            toInstantiate = CeilingTiles[6];
+                        }
+                        if ((x == -1) && (y == rows + 1))
+                        {
+                            toInstantiate = CeilingTiles[1];
+                        }
+                        if ((x == columns) && (y == rows + 1))
+                        {
+                            toInstantiate = CeilingTiles[0];
+                        }
+                    }
+                    if(((x >= 0)&&(x < columns))&&((y == 0)||(y == rows + 1)))
+                    {
+                        toInstantiate = CeilingTiles[7];
+                    }
+                    
+                    if(toInstantiate != VoidTile)
+                    {
+                        GameObject instance = Instantiate(toInstantiate, new Vector3(x, y, 0f)
+                            , Quaternion.identity) as GameObject;
+
+                        instance.transform.SetParent(boardHolder);
+                    }
+
+                }
             }
         }
     }
