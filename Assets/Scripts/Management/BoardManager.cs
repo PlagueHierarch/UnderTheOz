@@ -113,6 +113,8 @@ public class BoardManager : MonoBehaviour
         }
     }
 
+    //타일 테스트용 함수
+
     //void BoardSetup()
     //{
     //    boardHolder = new GameObject ("Board").transform;
@@ -205,7 +207,7 @@ public class BoardManager : MonoBehaviour
 
     public void SetupScence(int level)
     {
-        BoardSetup();
-        InitialiseList();
+        //BoardSetup();
+        //InitialiseList();
     }
 }
