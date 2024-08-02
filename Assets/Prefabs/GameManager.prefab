@@ -115,11 +115,11 @@ MonoBehaviour:
   - {fileID: 6119102389248039207, guid: 097689a386aa3c147bb9b49c667b5879, type: 3}
   - {fileID: 7391542800814569070, guid: 24e411e4e57c21443a42fff5051cdf6d, type: 3}
   VoidTile: {fileID: 2774524058477166581, guid: 379eb02be92d1b044b7ce6799747b3f7, type: 3}
-  mapSize: {x: 100, y: 100}
-  maxNode: 5
-  minDivideSize: 0.6
-  maxDivideSize: 0.9
-  minRoomSize: 10
+  mapSize: {x: 50, y: 50}
+  maxNode: 4
+  minDivideSize: 0.4
+  maxDivideSize: 0.6
+  minRoomSize: 6
   line: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
   lineHolder: {fileID: 0}
   rectangle: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
