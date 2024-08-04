@@ -4,6 +4,7 @@ using System;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace DungeonGenerator
 {
@@ -14,6 +15,8 @@ namespace DungeonGenerator
         public TreeNode parentTree;
         public RectInt treeSize;
         public RectInt dungeonSize;
+        public bool isSpawnExit = false; //ì œì¼ ì™¼ìª½ ë…¸ë“œì—ì„œë§Œ í•˜ë‚˜ ìƒì„±
+        public bool isSpawnPlayer = false; //ì œì¼ ì˜¤ë¥¸ìª½ ë…¸ë“œì—ì„œë§Œ í•˜ë‚˜ ìƒì„±
 
         public TreeNode(int x, int y, int width, int height)
         {
@@ -30,7 +33,9 @@ namespace DungeonGenerator
         [SerializeField] private GameObject[] floorTiles;
         [SerializeField] private GameObject[] wallTiles;
         [SerializeField] private GameObject[] CeilingTiles;
-        [SerializeField] private GameObject VoidTile;
+        [SerializeField] private GameObject[] VoidTile;
+        [SerializeField] private GameObject[] ExitTile;
+        [SerializeField] private GameObject[] Player;
 
         [SerializeField] private Vector2Int mapSize;
 
@@ -43,78 +48,134 @@ namespace DungeonGenerator
         [SerializeField] private Transform lineHolder;
         [SerializeField] private GameObject rectangle;
 
-        private Transform boardHolder;
+        public Dictionary<Vector2Int, int> map = new Dictionary<Vector2Int, int>(); //0 : ë¹ˆ ê³µê°„, 1 : ë°”ë‹¥ íƒ€ì¼, 2 : ë²½ íƒ€ì¼, 3 : ì²œì¥ íƒ€ì¼, 4 : ë²½ + ì²œì¥
+        public List<Vector3Int> FloorPosition = new List<Vector3Int>(); //ë°”ë‹¥íƒ€ì¼ ì¢Œí‘œë§Œ ì €ì¥
+
+        private BoardManager _boardManager;
+        private enum Tile_num //0 : ë¹ˆ ê³µê°„, 1 : ë°”ë‹¥ íƒ€ì¼, 2 : ë²½ íƒ€ì¼, 3 : ì²œì¥ íƒ€ì¼, 4 : ë²½ + ì²œì¥
+        {
+            None,
+            Floor,
+            Wall,
+        }
+        private int None = (int)Tile_num.None;
+        private int Floor = (int)Tile_num.Floor;
+        private int Wall = (int)Tile_num.Wall;
+        
+
+        void ReferenceComponent()
+        {
+            _boardManager = GetComponent<BoardManager>();
+        }
         private void Awake()
         {
-
-            OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //´øÀü »çÀÌÁî¿¡ ¸Â°Ô º®À» ±×¸²
-            TreeNode rootNode = new TreeNode(0, 0, mapSize.x, mapSize.y); //·çÆ®°¡ µÉ Æ®¸® »ı¼º
-            DivideTree(rootNode, 0); //Æ®¸® ºĞÇÒ
-            GenerateDungeon(rootNode, 0); //¹æ »ı¼º
-            GenerateRoad(rootNode, 0); //±æ ¿¬°á
+            ReferenceComponent();
+            map.Clear();
+            OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //ë§µì˜ ì´ í¬ê¸° ê·¸ë¦¼ + ë”•ì…”ë„ˆë¦¬ì— ì •ë³´ ì €ì¥
+            TreeNode rootNode = new TreeNode(0, 0, mapSize.x, mapSize.y); //ì²« ë¿Œë¦¬ ë…¸ë“œ ìƒì„±
+            rootNode.isSpawnExit = true;
+            rootNode.isSpawnPlayer = true;
+            DivideTree(rootNode, 0); //íŠ¸ë¦¬ë…¸ë“œ ì •í•´ì¤€ ìˆ˜ë§Œí¼ ë§Œë“¦
+            GenerateDungeon(rootNode, 0); //ë°© ìƒì„±
+            GenerateRoad(rootNode, 0); //ê¸¸ ìƒì„±
+            GenerateWall(0, 0);
+            GenerateCeiling(0, 0);
         }
 
-        private void DivideTree(TreeNode treeNode, int n) //Àç±Í ÇÔ¼ö
+        private void DivideTree(TreeNode treeNode, int n) //íŠ¸ë¦¬ë…¸ë“œ ì •í•´ì¤€ ìˆ˜ë§Œí¼ ë§Œë“¦ (ì¬ê·€ í•¨ìˆ˜)
         {
-            if (n < maxNode) //0 ºÎÅÍ ½ÃÀÛÇØ¼­ ³ëµåÀÇ ÃÖ´ñ°ª¿¡ ÀÌ¸¦ ¶§ ±îÁö ¹İº¹
+
+            if (n < maxNode) //ìµœëŒ€ ë…¸ë“œë³´ë‹¤ ì‘ì„ë•Œë§Œ ì‹¤í–‰
             {
-                RectInt size = treeNode.treeSize; //ÀÌÀü Æ®¸®ÀÇ ¹üÀ§ °ª ÀúÀå, »ç°¢ÇüÀÇ ¹üÀ§¸¦ ´ã±â À§ÇØ Rect »ç¿ë
-                int length = size.width >= size.height ? size.width : size.height; //»ç°¢ÇüÀÇ °¡·Î¿Í ¼¼·Î Áß ±æÀÌ°¡ ±ä ÃàÀ», Æ®¸®¸¦ ¹İÀ¸·Î ³ª´©´Â ±âÁØ¼±À¸·Î »ç¿ë
-                int split = Mathf.RoundToInt(Random.Range(length * minDivideSize, length * maxDivideSize)); //±âÁØ¼± À§¿¡¼­ ÃÖ¼Ò ¹üÀ§¿Í ÃÖ´ë ¹üÀ§ »çÀÌÀÇ °ªÀ» ¹«ÀÛÀ§·Î ¼±ÅÃ
-                if (size.width >= size.height) //°¡·Î
+                RectInt size = treeNode.treeSize; //ë¶€ëª¨ë¡œë¶€í„° ì‚¬ê°í˜• í¬ê¸° ë°›ì•„ì˜´
+                int length = size.width >= size.height ? size.width : size.height; //ê°€ë¡œ ì„¸ë¡œ ì¤‘ ë” ê¸´ ê³³ì„ ì €ì¥
+                int split = Mathf.RoundToInt(Random.Range(length * minDivideSize, length * maxDivideSize)); //ì •í•´ì¤€ ë¹„ìœ¨ ì‚¬ì´ì—ì„œ ëœë¤ìœ¼ë¡œ ì‚¬ê°í˜•ì„ ë‚˜ëˆ”
+                if (size.width >= size.height) //ê°€ë¡œê°€ ë” ê¸¸ë•Œ
                 {
-                    treeNode.leftTree = new TreeNode(size.x, size.y, split, size.height); //±âÁØ¼±À» ¹İÀ¸·Î ³ª´« °ªÀÎ splitÀ» °¡·Î ±æÀÌ·Î, ÀÌÀü Æ®¸®ÀÇ height°ªÀ» ¼¼·Î ±æÀÌ·Î »ç¿ë
-                    treeNode.rightTree = new TreeNode(size.x + split, size.y, size.width - split, size.height); //x°ª¿¡ split°ªÀ» ´õÇØ ÁÂÇ¥ ¼³Á¤, ÀÌÀü Æ®¸®ÀÇ width°ª¿¡ split°ªÀ» »© °¡·Î ±æÀÌ ¼³Á¤
-                    OnDrawLine(new Vector2(size.x + split, size.y), new Vector2(size.x + split, size.y + size.height)); //±âÁØ¼± ·»´õ¸µ
+                    treeNode.leftTree = new TreeNode(size.x, size.y, split, size.height); //xì¶• ê¸°ì¤€ìœ¼ë¡œ ì™¼ìª½ ë…¸ë“œ ìƒì„± (ì„¸ë¡œëŠ” ë¶€ëª¨ë…¸ë“œì˜ ì„¸ë¡œ ê¸¸ì´ ë°›ì•„ì˜´)
+                    treeNode.rightTree = new TreeNode(size.x + split, size.y, size.width - split, size.height); //xì¶• ê¸°ì¤€ìœ¼ë¡œ ì˜¤ë¥¸ìª½ ë…¸ë“œ ìƒì„±
+                    OnDrawLine(new Vector2(size.x + split, size.y), new Vector2(size.x + split, size.y + size.height)); //ê°€ìƒì˜ ì„  ìƒì„±
                 }
-                else //¼¼·Î
+                else //ì„¸ë¡œê°€ ë” ê¸¸ë•Œ
                 {
                     treeNode.leftTree = new TreeNode(size.x, size.y, size.width, split);
                     treeNode.rightTree = new TreeNode(size.x, size.y + split, size.width, size.height - split);
                     OnDrawLine(new Vector2(size.x, size.y + split), new Vector2(size.x + size.width, size.y + split));
                 }
-                treeNode.leftTree.parentTree = treeNode; //ºĞÇÒÇÑ Æ®¸®ÀÇ ºÎ¸ğ Æ®¸®¸¦ ¸Å°³º¯¼ö·Î ¹ŞÀº Æ®¸®·Î ÇÒ´ç
+
+                if(n == 0)
+                {
+                    if (treeNode.isSpawnExit == true)
+                    {
+                        treeNode.leftTree.isSpawnExit = true;
+                        treeNode.rightTree.isSpawnExit = false;
+                    }
+                }
+                else
+                {
+                    if (treeNode.isSpawnExit == true)
+                    {
+                        treeNode.leftTree.isSpawnExit = false;
+                        treeNode.rightTree.isSpawnExit = true;
+                    }
+                }
+
+                if (treeNode.isSpawnPlayer == true)
+                {
+                    treeNode.leftTree.isSpawnPlayer = false;
+                    treeNode.rightTree.isSpawnPlayer = true;
+                }
+
+                if((treeNode.isSpawnExit == false) && (treeNode.isSpawnPlayer == false))
+                {
+                    treeNode.leftTree.isSpawnExit = false;
+                    treeNode.rightTree.isSpawnExit = false;
+                    treeNode.leftTree.isSpawnPlayer = false;
+                    treeNode.rightTree.isSpawnPlayer = false;
+                }
+
+                treeNode.leftTree.parentTree = treeNode; //ë¶€ëª¨íŠ¸ë¦¬ ì—°ê²°
                 treeNode.rightTree.parentTree = treeNode;
-                DivideTree(treeNode.leftTree, n + 1); //Àç±Í ÇÔ¼ö, ÀÚ½Ä Æ®¸®¸¦ ¸Å°³º¯¼ö·Î ³Ñ±â°í ³ëµå °ª 1 Áõ°¡ ½ÃÅ´
+                DivideTree(treeNode.leftTree, n + 1); //ì¬ê·€í•¨ìˆ˜, ë‹¤ì‹œ í•œë²ˆ ì‹¤í–‰
                 DivideTree(treeNode.rightTree, n + 1);
             }
         }
 
-        private RectInt GenerateDungeon(TreeNode treeNode, int n) //¹æ »ı¼º
+        private RectInt GenerateDungeon(TreeNode treeNode, int n) //ë°© ìƒì„±
         {
-            if (n == maxNode) //³ëµå°¡ ÃÖÇÏÀ§ÀÏ ¶§¸¸ Á¶°Ç¹® ½ÇÇà
+            if (n == maxNode) //ì œì¼ í•˜ìœ„ ë…¸ë“œì¼ë•Œë§Œ ì‹¤í–‰
             {
                 RectInt size = treeNode.treeSize;
-                int width = Mathf.Max(Random.Range(size.width / 2, size.width - 1)); //Æ®¸® ¹üÀ§ ³»¿¡¼­ ¹«ÀÛÀ§ Å©±â ¼±ÅÃ, ÃÖ¼Ò Å©±â : width / 2
+                int width = Mathf.Max(Random.Range(size.width / 2, size.width - 1)); //ë…¸ë“œì˜ í¬ê¸°ì•ˆì—ì„œ ëœë¤ìœ¼ë¡œ ë°©ì˜ í¬ê¸°ë¥¼ ì •í•¨
                 int height = Mathf.Max(Random.Range(size.height / 2, size.height - 1));
-                int x = treeNode.treeSize.x + Random.Range(1, size.width - width); //ÃÖ´ë Å©±â : width / 2
+                int x = treeNode.treeSize.x + Random.Range(1, size.width - width); //ë°©ì´ ë…¸ë“œ í¬ê¸°ë¥¼ ë„˜ì§€ ì•Šë„ë¡ í•¨
                 int y = treeNode.treeSize.y + Random.Range(1, size.height - height);
-                OnDrawDungeon(x, y, width, height); //´øÀü ·»´õ¸µ
-                return new RectInt(x, y, width, height); //¸®ÅÏ °ªÀº ´øÀüÀÇ Å©±â·Î ±æÀ» »ı¼ºÇÒ ¶§ Å©±â Á¤º¸·Î È°¿ë
+                OnDrawDungeon(x, y, width, height, treeNode.isSpawnExit, treeNode.isSpawnPlayer); //ë˜ì „(íƒ€ì¼) ìƒì„±
+                return new RectInt(x, y, width, height); //ë˜ì „(ë°©)ì˜ í¬ê¸° ë¦¬í„´
             }
-            treeNode.leftTree.dungeonSize = GenerateDungeon(treeNode.leftTree, n + 1); //¸®ÅÏ °ª = ´øÀü Å©±â
+            treeNode.leftTree.dungeonSize = GenerateDungeon(treeNode.leftTree, n + 1); //ì¬ê·€í•¨ìˆ˜ë¡œ ë…¸íŠ¸ ë‚˜ëˆ”
             treeNode.rightTree.dungeonSize = GenerateDungeon(treeNode.rightTree, n + 1);
-            return treeNode.leftTree.dungeonSize; //ºÎ¸ğ Æ®¸®ÀÇ ´øÀü Å©±â´Â ÀÚ½Ä Æ®¸®ÀÇ ´øÀü Å©±â ±×´ë·Î »ç¿ë
+            return treeNode.leftTree.dungeonSize; //ìì‹íŠ¸ë¦¬ì¤‘ ì•„ë¬´ë˜ì „ì˜ ì‚¬ì´ì¦ˆ ê°€ì ¸ì˜´
         }
 
-        private void GenerateRoad(TreeNode treeNode, int n) //±æ ¿¬°á
+        private void GenerateRoad(TreeNode treeNode, int n) //ê¸¸ ìƒì„±(ì¬ê·€ í•¨ìˆ˜)
         {
             if (n == maxNode)
             {
                 return;
-            }//³ëµå°¡ ÃÖÇÏÀ§ÀÏ ¶§´Â ±æÀ» ¿¬°áÇÏÁö ¾ÊÀ½
-            int x1 = GetCenterX(treeNode.leftTree.dungeonSize); //ÀÚ½Ä Æ®¸®ÀÇ ´øÀü Áß¾Ó À§Ä¡¸¦ °¡Á®¿È
+            }//ì œì¼ ìµœí•˜ìœ„ ë…¸ë“œëŠ” ê¸¸ ìƒì„± ëª»í•¨
+            int x1 = GetCenterX(treeNode.leftTree.dungeonSize); //ì¤‘ê°„ ì¢Œí‘œ êµ¬í•¨
             int x2 = GetCenterX(treeNode.rightTree.dungeonSize);
             int y1 = GetCenterY(treeNode.leftTree.dungeonSize);
             int y2 = GetCenterY(treeNode.rightTree.dungeonSize);
-            GameObject toInstantiate = VoidTile;
-            for (int x = Mathf.Min(x1, x2); x <= Mathf.Max(x1, x2); x++) //x1°ú x2Áß °ªÀÌ ÀÛÀº °÷ºÎÅÍ °ªÀÌ Å« °÷±îÁö Å¸ÀÏ »ı¼º
+            GameObject toInstantiate = VoidTile[0];
+            for (int x = Mathf.Min(x1, x2); x <= Mathf.Max(x1, x2); x++) //ë‘˜ ì¤‘ ê°’ì´ ë” ì‘ì€ ê³³ë¶€í„° í° ê³³ê¹Œì§€ ê¸¸ ìƒì„±
             {
                 toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
                 GameObject instance = Instantiate(toInstantiate,
                     new Vector3Int(x - mapSize.x / 2, y1 - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
-
+                map[new Vector2Int(x - mapSize.x / 2, y1 - mapSize.y / 2)] = Floor;
             }
             for (int y = Mathf.Min(y1, y2); y <= Mathf.Max(y1, y2); y++)
             {
@@ -122,46 +183,197 @@ namespace DungeonGenerator
                 GameObject instance = Instantiate(toInstantiate,
                     new Vector3Int(x2 - mapSize.x / 2, y - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
+                map[new Vector2Int(x2 - mapSize.x / 2, y - mapSize.y / 2)] = Floor;
             }
             GenerateRoad(treeNode.leftTree, n + 1);
             GenerateRoad(treeNode.rightTree, n + 1);
         }
 
-        private void OnDrawLine(Vector2 from, Vector2 to) //¶óÀÎ ·»´õ·¯¸¦ ÀÌ¿ëÇØ ¶óÀÎÀ» ±×¸®´Â ¸Ş¼Òµå
+        private void OnDrawLine(Vector2 from, Vector2 to) 
         {
             LineRenderer lineRenderer = Instantiate(line, lineHolder).GetComponent<LineRenderer>();
             lineRenderer.SetPosition(0, from - mapSize / 2);
             lineRenderer.SetPosition(1, to - mapSize / 2);
         }
 
-        private void OnDrawDungeon(int x, int y, int width, int height) //Å©±â¿¡ ¸ÂÃç Å¸ÀÏÀ» »ı¼ºÇÏ´Â ¸Ş¼Òµå
+        private void OnDrawDungeon(int x, int y, int width, int height, bool isLeft, bool isRight) //ë°© ìƒì„±
         {
-            GameObject toInstantiate = VoidTile;
+            FloorPosition.Clear();
+            GameObject toInstantiate = VoidTile[0];
             for (int i = x; i < x + width; i++)
             {
                 for (int j = y; j < y + height; j++)
                 {
                     toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
-                    GameObject instance = Instantiate(toInstantiate, 
+                    GameObject instance = Instantiate(toInstantiate,
                         new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0)
                             , Quaternion.identity) as GameObject;
-                }
 
+                    map[new Vector2Int(i - mapSize.x / 2, j - mapSize.y / 2)] = Floor;
+                    FloorPosition.Add(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
+                }
+            }
+            if(isLeft == true)
+            {
+                GenerateExit(ExitTile, FloorPosition);
+            }
+            if(isRight == true)
+            {
+                GeneratePlayer(Player, FloorPosition);
             }
         }
 
-        private void OnDrawRectangle(int x, int y, int width, int height) //¶óÀÎ ·»´õ·¯¸¦ ÀÌ¿ëÇØ »ç°¢ÇüÀ» ±×¸®´Â ¸Ş¼Òµå
+        private void OnDrawRectangle(int x, int y, int width, int height) //ê°€ìƒì˜ ì‚¬ê°í˜• ì„  ìƒì„±(ë§µ ìµœëŒ€ í¬ê¸°)
         {
             LineRenderer lineRenderer = Instantiate(rectangle, lineHolder).GetComponent<LineRenderer>();
             lineRenderer.positionCount = 5;
-            lineRenderer.SetPosition(0, new Vector2(x, y) - mapSize / 2); //À§Ä¡¸¦ È­¸é Áß¾Ó¿¡ ¸ÂÃã
+            lineRenderer.SetPosition(0, new Vector2(x, y) - mapSize / 2);
             lineRenderer.SetPosition(1, new Vector2(x + width, y) - mapSize / 2);
             lineRenderer.SetPosition(2, new Vector2(x + width, y + height) - mapSize / 2);
             lineRenderer.SetPosition(3, new Vector2(x, y + height) - mapSize / 2);
             lineRenderer.SetPosition(4, new Vector2(x, y) - mapSize / 2);
 
+            for (int i = x - (mapSize.x / 2) - 1; i <= (x + width) - (mapSize.x / 2) + 1; i++)
+            {
+                for (int j = y - (mapSize.y / 2) - 1; j <= (y + height) - (mapSize.y / 2) + 1; j++)
+                {
+                    map.Add(new Vector2Int(i, j), None);
+                }
+            }
         }
 
+
+        private void GenerateWall(int x, int y)
+        {
+            for(int i = x - (mapSize.x / 2); i <= x + (mapSize.x / 2); i++)
+            {
+                for(int j = y - (mapSize.y / 2); j <= y + (mapSize.y / 2); j++)
+                {
+                    if (map[new Vector2Int(i, j)] == Floor)
+                    {
+                        if (map[new Vector2Int(i, j + 1)] == None)
+                        {
+                            InstanceRandomTile(i, j + 1, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i, j - 1)] == None)
+                        {
+                            InstanceRandomTile(i, j - 1, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i + 1, j)] == None)
+                        {
+                            InstanceRandomTile(i + 1, j, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i - 1, j)] == None)
+                        {
+                            InstanceRandomTile(i - 1, j, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i - 1, j - 1)] == None)
+                        {
+                            InstanceRandomTile(i - 1, j - 1, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i - 1, j + 1)] == None)
+                        {
+                            InstanceRandomTile(i - 1, j + 1, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i + 1, j + 1)] == None)
+                        {
+                            InstanceRandomTile(i + 1, j + 1, wallTiles, Wall);
+                        }
+                        if (map[new Vector2Int(i + 1, j - 1)] == None)
+                        {
+                            InstanceRandomTile(i + 1, j - 1, wallTiles, Wall);
+                        }
+                    }
+                }
+            }
+        }
+
+        private void GenerateCeiling(int x, int y)
+        {
+            for (int i = x - (mapSize.x / 2); i <= x + (mapSize.x / 2); i++)
+            {
+                for (int j = y - (mapSize.y / 2); j <= y + (mapSize.y / 2); j++)
+                {
+                    if (map[new Vector2Int(i, j)] == Wall)
+                    {
+                        //íŠ¹ë³„ ì˜ˆì™¸
+                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall)
+                            && (map[new Vector2Int(i + 1, j + 1)] == Wall) && (map[new Vector2Int(i - 1, j + 1)] != Wall) && (map[new Vector2Int(i + 1, j - 1)] == Wall))
+                        {
+                            InstanceCeilingTile(i, j + 1, CeilingTiles, 6);
+                            continue;
+                        }
+                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
+                            && (map[new Vector2Int(i + 1, j + 1)] == Wall) && (map[new Vector2Int(i - 1, j + 1)] != Wall) && (map[new Vector2Int(i + 1, j - 1)] == Wall) && (map[new Vector2Int(i - 1, j - 1)] != Wall))
+                        {
+                            InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
+                            InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            continue;
+                        }
+                        if ((map[new Vector2Int(i + 1, j)] != Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
+                            && (map[new Vector2Int(i + 1, j + 1)] != Wall) && (map[new Vector2Int(i - 1, j + 1)] == Wall) && (map[new Vector2Int(i + 1, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j - 1)] != Wall))
+                        {
+                            InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
+                            InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            continue;
+                        }
+                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && ((map[new Vector2Int(i, j + 1)] != Wall) || (map[new Vector2Int(i, j - 1)] != Wall)))
+                        {
+                            InstanceCeilingTile(i, j + 1, CeilingTiles, 7);
+                            continue;
+                        }
+                        if ((map[new Vector2Int(i + 1, j)] != Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
+                            && (map[new Vector2Int(i + 1, j + 1)] != Wall) && (map[new Vector2Int(i - 1, j + 1)] == Wall) && (map[new Vector2Int(i + 1, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j - 1)] == Wall))
+                        {
+                            InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            continue;
+                        }
+                        {   //ê¸°ë³¸ ê²½ìš°ì˜ ìˆ˜
+                            if ((map[new Vector2Int(i, j - 1)] == Wall) && ((map[new Vector2Int(i - 1, j)] != Wall) || (map[new Vector2Int(i + 1, j)] != Wall)))
+                            {
+                                InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            }
+                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 1);
+                                //InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            }
+                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
+                                //InstanceCeilingTile(i, j, CeilingTiles, 2);
+                            }
+                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 5);
+                            }
+                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 6);
+                            }
+                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] != Wall) && (map[new Vector2Int(i + 1, j)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 3);
+                            }
+                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j)] != Wall))
+                            {
+                                InstanceCeilingTile(i, j + 1, CeilingTiles, 4);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void GenerateExit(GameObject[] exitTile, List<Vector3Int> gridPosition)
+        {
+            Debug.Log("íƒˆì¶œêµ¬");
+            _boardManager.LayoutObjectAtRandom(exitTile, 1, 1, gridPosition);
+        }
+        private void GeneratePlayer(GameObject[] player, List<Vector3Int> gridPosition)
+        {
+            _boardManager.LayoutObjectAtRandom(player, 1, 1, gridPosition);
+        }
         private int GetCenterX(RectInt size)
         {
             return size.x + size.width / 2;
@@ -170,6 +382,26 @@ namespace DungeonGenerator
         private int GetCenterY(RectInt size)
         {
             return size.y + size.height / 2;
+        }
+
+        private void InstanceRandomTile(int x, int y, GameObject[] Tiles, int tile)
+        {
+            GameObject toInstantiate = VoidTile[0];
+            toInstantiate = Tiles[Random.Range(0, Tiles.Length)];
+            GameObject instance = Instantiate(toInstantiate,
+                new Vector3Int(x, y, 0)
+                    , Quaternion.identity) as GameObject;
+
+            map[new Vector2Int(x, y)] = tile;
+        }
+
+        private void InstanceCeilingTile(int x, int y, GameObject[] Tiles, int n)
+        {
+            GameObject toInstantiate = VoidTile[0];
+            toInstantiate = Tiles[n];
+            GameObject instance = Instantiate(toInstantiate,
+                new Vector3Int(x, y, 0)
+                    , Quaternion.identity) as GameObject;
         }
     }
 }

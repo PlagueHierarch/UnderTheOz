@@ -10,6 +10,8 @@ public class GameManager : MonoBehaviour
 
     private int level = 3;
 
+
+
     [HideInInspector] public bool playersTurn = true;
     void Awake()
     {

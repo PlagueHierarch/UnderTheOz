@@ -15,7 +15,7 @@ TagManager:
   - Water
   - UI
   - BlockingLayer
-  - 
+  - ExitLayer
   - 
   - 
   - 
@@ -46,6 +46,9 @@ TagManager:
     locked: 0
   - name: Floor
     uniqueID: 1986474955
+    locked: 0
+  - name: Exit
+    uniqueID: 2870935351
     locked: 0
   - name: Units
     uniqueID: 1652424947
