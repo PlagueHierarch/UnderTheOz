@@ -123,6 +123,7 @@ MonoBehaviour:
   blockingLayer:
     serializedVersion: 2
     m_Bits: 64
+  _gameManagerObject: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
   _camera: {fileID: 0}
 --- !u!1 &8150218781113358587
 GameObject:

@@ -50,11 +50,11 @@ TagManager:
   - name: Exit
     uniqueID: 2870935351
     locked: 0
-  - name: Units
-    uniqueID: 1652424947
-    locked: 0
   - name: Wall
     uniqueID: 4150804171
+    locked: 0
+  - name: Units
+    uniqueID: 1652424947
     locked: 0
   - name: Ceiling
     uniqueID: 1333305431

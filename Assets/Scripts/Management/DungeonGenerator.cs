@@ -29,6 +29,8 @@ namespace DungeonGenerator
 
     public class DungeonGenerator : MonoBehaviour
     {
+        public static DungeonGenerator dungeonInstance = null;
+
         //[SerializeField] private GameObject[] enemyTiles;
         [SerializeField] private GameObject[] floorTiles;
         [SerializeField] private GameObject[] wallTiles;
@@ -48,13 +50,15 @@ namespace DungeonGenerator
         [SerializeField] private Transform lineHolder;
         [SerializeField] private GameObject rectangle;
 
+        [SerializeField] private GameObject _gameManager;
+        private BoardManager _boardManager;
+
         public Dictionary<Vector2Int, int> mapList = new Dictionary<Vector2Int, int>(); //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
         public Dictionary<Vector2Int, bool> wallList = new Dictionary<Vector2Int, bool>();
         public Dictionary<Vector2Int, int> ceilingList = new Dictionary<Vector2Int, int>();
         
         public List<Vector3Int> FloorPosition = new List<Vector3Int>(); //바닥타일 좌표만 저장
 
-        private BoardManager _boardManager;
         private enum Tile_num //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
         {
             None,
@@ -72,6 +76,16 @@ namespace DungeonGenerator
         }
         private void Awake()
         {
+            _boardManager = _gameManager.GetComponent<BoardManager>();
+            if (dungeonInstance == null)
+            {
+                dungeonInstance = this;
+            }
+            else if (dungeonInstance != this)
+            {
+                Destroy(gameObject);
+            }
+
             ReferenceComponent();
             mapList.Clear();
             OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //맵의 총 크기 그림 + 딕셔너리에 정보 저장

@@ -12,6 +12,8 @@ public class BoardManager : MonoBehaviour
     private List <Vector3> gridPositions = new List<Vector3> ();
 
     private DungeonGenerator.DungeonGenerator _dungeonGenerator;
+    
+    [SerializeField]private GameObject dungeonGenerator;
 
 
     private void Awake()
@@ -38,9 +40,12 @@ public class BoardManager : MonoBehaviour
         }
     }
 
-    public void SetupScence(int level)
+    public void SetupScence(int stage)
     {
-
+        if(DungeonGenerator.DungeonGenerator.dungeonInstance == null)
+        {
+            Instantiate(dungeonGenerator);
+        }
     }
 }
 
