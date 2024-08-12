@@ -25,34 +25,72 @@ public class Player : MovingObject
     void Update()
     {
         CameraMove();
-
-
         if (!GameManager.instance.playersTurn)
         {
             return;
         }
-
-        int horizontal = 0;
-        int vertical = 0;
-
-        horizontal = (int)Input.GetAxisRaw("Horizontal");
-        vertical = (int)Input.GetAxisRaw("Vertical");
-
-        if (horizontal != 0)
-        {
-            vertical = 0;
-        }
-        if (horizontal != 0 || vertical != 0)
-        {
-            AttemptMove<Obstacle>(horizontal, vertical);
-        }
+        GetKey();
     }
     
+
+
     protected override void AttemptMove<T> (int xDir,  int yDir)
     {
         base.AttemptMove<T>(xDir, yDir);
 
         GameManager.instance.playersTurn = false;
+    }
+
+    private void GetKey()
+    {
+        int horizontal = 0;
+        int vertical = 0;
+
+        if (Input.GetKey(KeyCode.Keypad8))
+        {
+            horizontal = 0;
+            vertical = 1;
+        }
+        else if (Input.GetKey(KeyCode.Keypad6))
+        {
+            horizontal = 1;
+            vertical = 0;
+        }
+        else if (Input.GetKey(KeyCode.Keypad2))
+        {
+            horizontal = 0;
+            vertical = -1;
+        }
+        else if (Input.GetKey(KeyCode.Keypad4))
+        {
+            horizontal = -1;
+            vertical = 0;
+        }
+        else if (Input.GetKey(KeyCode.Keypad9))
+        {
+            horizontal = 1;
+            vertical = 1;
+        }
+        else if (Input.GetKey(KeyCode.Keypad3))
+        {
+            horizontal = 1;
+            vertical = -1;
+        }
+        else if (Input.GetKey(KeyCode.Keypad1))
+        {
+            horizontal = -1;
+            vertical = -1;
+        }
+        else if (Input.GetKey(KeyCode.Keypad7))
+        {
+            horizontal = -1;
+            vertical = 1;
+        }
+
+        if (horizontal != 0 || vertical != 0)
+        {
+            AttemptMove<Obstacle>(horizontal, vertical);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
