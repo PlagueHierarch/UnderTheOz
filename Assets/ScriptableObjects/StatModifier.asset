@@ -1,20 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: StatModifier
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerStat
-  hp: 7
-  maxhp: 7
-  dmg: 5
-  exp: 0
-  level: 1
-  lvupExp: 1.8
+version https://git-lfs.github.com/spec/v1
+oid sha256:3f0b19d77243c0d16756bd95e5a01129b0192e154f658f3f2053276ad06e7481
+size 435
