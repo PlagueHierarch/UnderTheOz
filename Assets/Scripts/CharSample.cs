@@ -11,8 +11,6 @@ public class CharSample : MonoBehaviour
     public Rigidbody2D CR;
     Vector2 movement = new Vector2();
 
-    public Slider HP;
-    public Slider EXP;
     public float hp;
     public float exp;
     public int level;
@@ -21,19 +19,12 @@ public class CharSample : MonoBehaviour
 
     public GameObject[] items_UI;
 
-    public GameObject levelText;
-    private TMP_Text lt_text;
 
-    private void Awake()
-    {
-       lt_text = levelText.GetComponent<TMP_Text>();
-    }
     private void Start()
     {
         hp = 100;
         exp = 0;
         level = 1;
-        HP.value = hp;
     }
     // Update is called once per frame
     void Update()
@@ -48,23 +39,14 @@ public class CharSample : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(collision.tag == "enemy_temp")
+        if (collision.tag == "enemy_temp")
         {
-            hp -= 10;
-            HP.value = hp;
+            //curStats.HP -= 5;
         }
 
         else if (collision.tag == "exp_temp")
         {
-            exp += 10;
-            EXP.value = exp;
-            if(exp >= max_exp)
-            {
-                exp = 0;
-                EXP.value = exp;
-                level += 1;
-                lt_text.text = level.ToString();
-            }
+            //curStats.Exp += 5;
         }
 
         else if (collision.tag == "item_temp")
