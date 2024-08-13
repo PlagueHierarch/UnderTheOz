@@ -9,30 +9,38 @@ using UnityEngine.SceneManagement;
 public class Player : MovingObject
 {
     [SerializeField] private GameObject _gameManagerObject;
-    private Animator animator;
-    private GameManager _gameManager;
+    [SerializeField] private GameObject _playerAnimation;
+    [SerializeField] private GameObject _camera;
 
-    public GameObject _camera;
+    private Animator _animator;
+    private GameManager _gameManager;
+    private SpriteRenderer _animationSpriteRenderer;
+
 
     protected override void Start()
     {
         _camera = GameObject.Find("Main Camera");
-        animator = GetComponent<Animator>();
+        _animator = _playerAnimation.GetComponent<Animator>();
         _gameManager = _gameManagerObject.GetComponent<GameManager>();
+        _animationSpriteRenderer = _playerAnimation.GetComponent<SpriteRenderer>();
+        
         base.Start();
     }
 
     void Update()
     {
+        _animator.SetBool("isMoving", false);
+
         CameraMove();
         if (!GameManager.instance.playersTurn)
         {
             return;
         }
-        GetKey();
+        else if (GameManager.instance.playersTurn)
+        {
+            InputKey();
+        }
     }
-    
-
 
     protected override void AttemptMove<T> (int xDir,  int yDir)
     {
@@ -41,10 +49,16 @@ public class Player : MovingObject
         GameManager.instance.playersTurn = false;
     }
 
-    private void GetKey()
+    private void InputKey() //8키 방향 이동 및 공격 함수
     {
         int horizontal = 0;
         int vertical = 0;
+
+        if(Input.GetKey(KeyCode.Space))
+        {
+            _animator.SetTrigger("isAttack");
+            GameManager.instance.playersTurn = false;
+        }
 
         if (Input.GetKey(KeyCode.Keypad8))
         {
@@ -89,7 +103,20 @@ public class Player : MovingObject
 
         if (horizontal != 0 || vertical != 0)
         {
+            _animator.SetBool("isMoving", true);
+            if (horizontal < 0)
+            {
+                _animator.SetInteger("Direction", -1); //음수가 왼쪽 양수가 오른쪽
+            }
+            else if(horizontal > 0)
+            {
+                _animator.SetInteger("Direction", 1);
+            }
             AttemptMove<Obstacle>(horizontal, vertical);
+        }
+        if(horizontal == 0 &&  vertical == 0)
+        {
+
         }
     }
 
