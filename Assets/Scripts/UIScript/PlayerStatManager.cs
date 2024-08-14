@@ -42,8 +42,8 @@ public class PlayerStatManager : MonoBehaviour
     {
         bars[0].fillAmount = (float)(curStats.HP / curStats.MaxHP);
         bars[1].fillAmount = (float)(curStats.Exp / curStats.LvUpExp);
-        Debug.Log("hp" + curStats.HP +"/"+ curStats.MaxHP + "=" +  bars[0].fillAmount);
-        Debug.Log("Exp" + curStats.Exp + "/" + curStats.LvUpExp + "=" + bars[1].fillAmount);
+       // Debug.Log("hp" + curStats.HP +"/"+ curStats.MaxHP + "=" +  bars[0].fillAmount);
+        //Debug.Log("Exp" + curStats.Exp + "/" + curStats.LvUpExp + "=" + bars[1].fillAmount);
         texts[0].text = $"{curStats.HP} / {curStats.MaxHP}";
     }
 

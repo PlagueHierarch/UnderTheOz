@@ -122,7 +122,7 @@ MonoBehaviour:
   moveTime: 0.05
   blockingLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 0
   _gameManagerObject: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
   _playerAnimation: {fileID: 8150218781113358587}
   _camera: {fileID: 0}
@@ -198,7 +198,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 1652424947
-  m_SortingLayer: 4
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: d59ff0a99d8eede4bb8f953c73d4d74d, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
