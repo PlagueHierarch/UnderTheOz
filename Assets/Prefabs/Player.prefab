@@ -122,7 +122,7 @@ MonoBehaviour:
   moveTime: 0.05
   blockingLayer:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   _gameManagerObject: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
   _playerAnimation: {fileID: 8150218781113358587}
   _camera: {fileID: 0}
@@ -137,7 +137,7 @@ GameObject:
   - component: {fileID: 2232329402356647466}
   - component: {fileID: 2979252759136381526}
   - component: {fileID: 8938516460418526457}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: Animation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
