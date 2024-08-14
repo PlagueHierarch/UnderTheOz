@@ -31,7 +31,7 @@ public class PlayerStat : Entity
     private int level;
     public int Level { get { return level; } set { level = value; } }
     [SerializeField]
-    private float lvupExp;
-    public float LvUpExp { get { return lvupExp; } set { lvupExp = value; } }
+    private int lvupExp;
+    public int LvUpExp { get { return lvupExp; } set { lvupExp = value; } }
     
 }

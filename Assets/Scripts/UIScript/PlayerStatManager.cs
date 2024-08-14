@@ -11,7 +11,6 @@ public class PlayerStatManager : MonoBehaviour
     [SerializeField] private PlayerStat baseStats;
     [SerializeField] private PlayerStat statsModifier;
     public PlayerStat curStats  { get; private set; } 
-    public float expOffset;
 
     public List<Image> bars;
     public List<TMP_Text> texts;
@@ -31,7 +30,7 @@ public class PlayerStatManager : MonoBehaviour
         curStats.HP += statsModifier.HP;
         curStats.MaxHP += statsModifier.MaxHP;
         curStats.Dmg += statsModifier.Dmg;
-        curStats.Exp = 0 + (int)expOffset;
+        curStats.Exp = 0;
         curStats.Level += 1;
         curStats.LvUpExp += statsModifier.LvUpExp;
         texts[1].text = "LV."+curStats.Level.ToString();
@@ -58,8 +57,6 @@ public class PlayerStatManager : MonoBehaviour
     {
         if(curStats.Exp >= curStats.LvUpExp)
         {
-            expOffset = curStats.Exp - curStats.LvUpExp;
-            if(expOffset < 0 ) expOffset = 0;
             LevelUp();
         }
 

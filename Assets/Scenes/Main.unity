@@ -358,7 +358,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameManager: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
-  boardManager: {fileID: 0}
+  boardManager: {fileID: 1970680844797078128, guid: d1ac814d03945e740b3ab51f0ce43696, type: 3}
 --- !u!114 &121409158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -495,7 +495,7 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 40298667
+  m_SortingLayerID: -664103869
   m_SortingOrder: 50
   m_TargetDisplay: 0
 --- !u!224 &145112104
