@@ -9,9 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5950037960368820878}
-  - component: {fileID: 4821371578799018476}
   - component: {fileID: 4101887192996539098}
-  - component: {fileID: 8798850663391689864}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -34,18 +32,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &4821371578799018476
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2634250739783730768}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5306c95090a0f294abb6bf299e746b11, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4101887192996539098
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58,54 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7e3be2b4aae980746a90b2085c242588, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  turnDelay: 0.1
-  boardScript: {fileID: 0}
+  turnDelay: 1
+  stage: 1
+  boardManager: {fileID: 1970680844797078128, guid: d1ac814d03945e740b3ab51f0ce43696, type: 3}
   playersTurn: 1
---- !u!114 &8798850663391689864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2634250739783730768}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ff79d8d6a4235a4e9404218afe2e6ef, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  floorTiles:
-  - {fileID: 6254986426155743890, guid: 14636f489c6208f4e81f3b5703a52f00, type: 3}
-  - {fileID: 5826141275488873274, guid: 4662cfee89ff31e45b886d50e8e3228a, type: 3}
-  - {fileID: 2048772165623792297, guid: 17cf3a7c8c897984888262342010ff00, type: 3}
-  - {fileID: 4739270338966361026, guid: 0f95b2c4d3e33fe499286dac863f663b, type: 3}
-  wallTiles:
-  - {fileID: 7609915426105432211, guid: abdd8c9815aff034ca330492ca58ea00, type: 3}
-  - {fileID: 3865762272846328721, guid: dc79bfe6db679ae47b59f38aac936b90, type: 3}
-  - {fileID: 6015396590627464687, guid: 1cf9f789ae0ba1a4a86243843fa66c4d, type: 3}
-  - {fileID: 2348080502331919965, guid: 4d709463f8fe21845b2780f6c40b0f32, type: 3}
-  CeilingTiles:
-  - {fileID: 7051428572768812878, guid: 620c0be2094e7fe4cb5d2b36b5b3a247, type: 3}
-  - {fileID: 7051428572768812878, guid: 8c7b8525bcf8fde4d9fe0ba29da389ba, type: 3}
-  - {fileID: 6292757027278701894, guid: 25335e9d433c9ae45a234ab2678699d8, type: 3}
-  - {fileID: 6452154238071740054, guid: 1b6193e2d38d30746a9fa511ea4a89ab, type: 3}
-  - {fileID: 6452154238071740054, guid: adaa8fad3f99f2c4fbf89c47c2c5f534, type: 3}
-  - {fileID: 6119102389248039207, guid: b66b1ed83bf2ecb40a40dec78a8ddc76, type: 3}
-  - {fileID: 6119102389248039207, guid: 097689a386aa3c147bb9b49c667b5879, type: 3}
-  - {fileID: 7391542800814569070, guid: 24e411e4e57c21443a42fff5051cdf6d, type: 3}
-  VoidTile:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  ExitTile:
-  - {fileID: 4282699304648205821, guid: 2edf53da79cef4548ab7be3dd49e17cf, type: 3}
-  Player:
-  - {fileID: 5824696189515206154, guid: f0593a57274b7814fb234944700b9318, type: 3}
-  mapSize: {x: 50, y: 50}
-  maxNode: 4
-  minDivideSize: 0.3
-  maxDivideSize: 0.7
-  minRoomSize: 20
-  line: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
-  lineHolder: {fileID: 0}
-  rectangle: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
-  FloorPosition: []

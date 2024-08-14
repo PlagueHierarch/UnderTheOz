@@ -29,6 +29,8 @@ namespace DungeonGenerator
 
     public class DungeonGenerator : MonoBehaviour
     {
+        public static DungeonGenerator dungeonInstance = null;
+
         //[SerializeField] private GameObject[] enemyTiles;
         [SerializeField] private GameObject[] floorTiles;
         [SerializeField] private GameObject[] wallTiles;
@@ -48,10 +50,15 @@ namespace DungeonGenerator
         [SerializeField] private Transform lineHolder;
         [SerializeField] private GameObject rectangle;
 
-        public Dictionary<Vector2Int, int> map = new Dictionary<Vector2Int, int>(); //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
+        [SerializeField] private GameObject _gameManager;
+        private BoardManager _boardManager;
+
+        public Dictionary<Vector2Int, int> mapList = new Dictionary<Vector2Int, int>(); //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
+        public Dictionary<Vector2Int, bool> wallList = new Dictionary<Vector2Int, bool>();
+        public Dictionary<Vector2Int, int> ceilingList = new Dictionary<Vector2Int, int>();
+        
         public List<Vector3Int> FloorPosition = new List<Vector3Int>(); //바닥타일 좌표만 저장
 
-        private BoardManager _boardManager;
         private enum Tile_num //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
         {
             None,
@@ -69,8 +76,18 @@ namespace DungeonGenerator
         }
         private void Awake()
         {
+            _boardManager = _gameManager.GetComponent<BoardManager>();
+            if (dungeonInstance == null)
+            {
+                dungeonInstance = this;
+            }
+            else if (dungeonInstance != this)
+            {
+                Destroy(gameObject);
+            }
+
             ReferenceComponent();
-            map.Clear();
+            mapList.Clear();
             OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //맵의 총 크기 그림 + 딕셔너리에 정보 저장
             TreeNode rootNode = new TreeNode(0, 0, mapSize.x, mapSize.y); //첫 뿌리 노드 생성
             rootNode.isSpawnExit = true;
@@ -78,8 +95,11 @@ namespace DungeonGenerator
             DivideTree(rootNode, 0); //트리노드 정해준 수만큼 만듦
             GenerateDungeon(rootNode, 0); //방 생성
             GenerateRoad(rootNode, 0); //길 생성
-            GenerateWall(0, 0);
+            GenerateWall(0, 0, mapSize.x, mapSize.y);
             GenerateCeiling(0, 0);
+            OnDrawCeiling(0, 0);
+            OnDrawWall();
+
         }
 
         private void DivideTree(TreeNode treeNode, int n) //트리노드 정해준 수만큼 만듦 (재귀 함수)
@@ -175,7 +195,7 @@ namespace DungeonGenerator
                 GameObject instance = Instantiate(toInstantiate,
                     new Vector3Int(x - mapSize.x / 2, y1 - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
-                map[new Vector2Int(x - mapSize.x / 2, y1 - mapSize.y / 2)] = Floor;
+                mapList[new Vector2Int(x - mapSize.x / 2, y1 - mapSize.y / 2)] = Floor;
             }
             for (int y = Mathf.Min(y1, y2); y <= Mathf.Max(y1, y2); y++)
             {
@@ -183,7 +203,7 @@ namespace DungeonGenerator
                 GameObject instance = Instantiate(toInstantiate,
                     new Vector3Int(x2 - mapSize.x / 2, y - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
-                map[new Vector2Int(x2 - mapSize.x / 2, y - mapSize.y / 2)] = Floor;
+                mapList[new Vector2Int(x2 - mapSize.x / 2, y - mapSize.y / 2)] = Floor;
             }
             GenerateRoad(treeNode.leftTree, n + 1);
             GenerateRoad(treeNode.rightTree, n + 1);
@@ -191,9 +211,9 @@ namespace DungeonGenerator
 
         private void OnDrawLine(Vector2 from, Vector2 to) 
         {
-            LineRenderer lineRenderer = Instantiate(line, lineHolder).GetComponent<LineRenderer>();
-            lineRenderer.SetPosition(0, from - mapSize / 2);
-            lineRenderer.SetPosition(1, to - mapSize / 2);
+            //LineRenderer lineRenderer = Instantiate(line, lineHolder).GetComponent<LineRenderer>();
+            //lineRenderer.SetPosition(0, from - mapSize / 2);
+            //lineRenderer.SetPosition(1, to - mapSize / 2);
         }
 
         private void OnDrawDungeon(int x, int y, int width, int height, bool isLeft, bool isRight) //방 생성
@@ -209,7 +229,7 @@ namespace DungeonGenerator
                         new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0)
                             , Quaternion.identity) as GameObject;
 
-                    map[new Vector2Int(i - mapSize.x / 2, j - mapSize.y / 2)] = Floor;
+                    mapList[new Vector2Int(i - mapSize.x / 2, j - mapSize.y / 2)] = Floor;
                     FloorPosition.Add(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
                 }
             }
@@ -225,63 +245,73 @@ namespace DungeonGenerator
 
         private void OnDrawRectangle(int x, int y, int width, int height) //가상의 사각형 선 생성(맵 최대 크기)
         {
-            LineRenderer lineRenderer = Instantiate(rectangle, lineHolder).GetComponent<LineRenderer>();
-            lineRenderer.positionCount = 5;
-            lineRenderer.SetPosition(0, new Vector2(x, y) - mapSize / 2);
-            lineRenderer.SetPosition(1, new Vector2(x + width, y) - mapSize / 2);
-            lineRenderer.SetPosition(2, new Vector2(x + width, y + height) - mapSize / 2);
-            lineRenderer.SetPosition(3, new Vector2(x, y + height) - mapSize / 2);
-            lineRenderer.SetPosition(4, new Vector2(x, y) - mapSize / 2);
+            //LineRenderer lineRenderer = Instantiate(rectangle, lineHolder).GetComponent<LineRenderer>();
+            //lineRenderer.positionCount = 5;
+            //lineRenderer.SetPosition(0, new Vector2(x, y) - mapSize / 2);
+            //lineRenderer.SetPosition(1, new Vector2(x + width, y) - mapSize / 2);
+            //lineRenderer.SetPosition(2, new Vector2(x + width, y + height) - mapSize / 2);
+            //lineRenderer.SetPosition(3, new Vector2(x, y + height) - mapSize / 2);
+            //lineRenderer.SetPosition(4, new Vector2(x, y) - mapSize / 2);
 
             for (int i = x - (mapSize.x / 2) - 1; i <= (x + width) - (mapSize.x / 2) + 1; i++)
             {
                 for (int j = y - (mapSize.y / 2) - 1; j <= (y + height) - (mapSize.y / 2) + 1; j++)
                 {
-                    map.Add(new Vector2Int(i, j), None);
+                    mapList.Add(new Vector2Int(i, j), None);
+                    ceilingList.Add(new Vector2Int(i, j), -1);
+                    wallList.Add(new Vector2Int(i, j), false);
                 }
             }
         }
 
 
-        private void GenerateWall(int x, int y)
+        private void GenerateWall(int x, int y, int width, int height)
         {
-            for(int i = x - (mapSize.x / 2); i <= x + (mapSize.x / 2); i++)
+            for (int i = x - (mapSize.x / 2) - 1; i <= (x + width) - (mapSize.x / 2) + 1; i++)
             {
-                for(int j = y - (mapSize.y / 2); j <= y + (mapSize.y / 2); j++)
+                for (int j = y - (mapSize.y / 2) - 1; j <= (y + height) - (mapSize.y / 2) + 1; j++)
                 {
-                    if (map[new Vector2Int(i, j)] == Floor)
+                    if (mapList[new Vector2Int(i, j)] == Floor)
                     {
-                        if (map[new Vector2Int(i, j + 1)] == None)
+                        if (mapList[new Vector2Int(i + 1, j)] == None)
                         {
-                            InstanceRandomTile(i, j + 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i + 1, j)] = true;
+                            mapList[new Vector2Int(i + 1, j)] = Wall;
                         }
-                        if (map[new Vector2Int(i, j - 1)] == None)
+                        if (mapList[new Vector2Int(i - 1, j)] == None)
                         {
-                            InstanceRandomTile(i, j - 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i - 1, j)] = true;
+                            mapList[new Vector2Int(i - 1, j)] = Wall;
                         }
-                        if (map[new Vector2Int(i + 1, j)] == None)
+                        if (mapList[new Vector2Int(i, j + 1)] == None)
                         {
-                            InstanceRandomTile(i + 1, j, wallTiles, Wall);
+                            wallList[new Vector2Int(i, j + 1)] = true;
+                            mapList[new Vector2Int(i, j + 1)] = Wall;
                         }
-                        if (map[new Vector2Int(i - 1, j)] == None)
+                        if (mapList[new Vector2Int(i, j - 1)] == None)
                         {
-                            InstanceRandomTile(i - 1, j, wallTiles, Wall);
+                            wallList[new Vector2Int(i, j - 1)] = true;
+                            mapList[new Vector2Int(i, j - 1)] = Wall;
                         }
-                        if (map[new Vector2Int(i - 1, j - 1)] == None)
+                        if (mapList[new Vector2Int(i + 1, j + 1)] == None)
                         {
-                            InstanceRandomTile(i - 1, j - 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i + 1, j + 1)] = true;
+                            mapList[new Vector2Int(i + 1, j + 1)] = Wall;
                         }
-                        if (map[new Vector2Int(i - 1, j + 1)] == None)
+                        if (mapList[new Vector2Int(i + 1, j - 1)] == None)
                         {
-                            InstanceRandomTile(i - 1, j + 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i + 1, j - 1)] = true;
+                            mapList[new Vector2Int(i + 1, j - 1)] = Wall;
                         }
-                        if (map[new Vector2Int(i + 1, j + 1)] == None)
+                        if (mapList[new Vector2Int(i - 1, j - 1)] == None)
                         {
-                            InstanceRandomTile(i + 1, j + 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i - 1, j - 1)] = true;
+                            mapList[new Vector2Int(i - 1, j - 1)] = Wall;
                         }
-                        if (map[new Vector2Int(i + 1, j - 1)] == None)
+                        if (mapList[new Vector2Int(i - 1, j + 1)] == None)
                         {
-                            InstanceRandomTile(i + 1, j - 1, wallTiles, Wall);
+                            wallList[new Vector2Int(i - 1, j + 1)] = true;
+                            mapList[new Vector2Int(i - 1, j + 1)] = Wall;
                         }
                     }
                 }
@@ -292,74 +322,106 @@ namespace DungeonGenerator
         {
             for (int i = x - (mapSize.x / 2); i <= x + (mapSize.x / 2); i++)
             {
+                for (int j = y + (mapSize.y / 2); j >= y - (mapSize.y / 2); j--)
+                {
+                    if (mapList[new Vector2Int(i, j)] == Wall)
+                    {
+                        if (ceilingList[new Vector2Int(i, j)] == -1)
+                        {
+                            //특별 예외
+                            if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] == Wall) && (mapList[new Vector2Int(i, j - 1)] != Wall)
+                                && (mapList[new Vector2Int(i + 1, j + 1)] == Wall) && (mapList[new Vector2Int(i - 1, j + 1)] != Wall) && (mapList[new Vector2Int(i + 1, j - 1)] == Wall))
+                            {
+                                ceilingList[new Vector2Int(i, j + 1)] = 13;
+                                continue;
+                            }
+                            if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] != Wall) && (mapList[new Vector2Int(i, j - 1)] == Wall)
+                                && (mapList[new Vector2Int(i + 1, j + 1)] == Wall) && (mapList[new Vector2Int(i - 1, j + 1)] != Wall) && (mapList[new Vector2Int(i + 1, j - 1)] == Wall) && (mapList[new Vector2Int(i - 1, j - 1)] != Wall))
+                            {
+                                ceilingList[new Vector2Int(i, j + 1)] = 5;
+                                ceilingList[new Vector2Int(i, j)] = 14;
+                                continue;
+                            }
+                            if ((mapList[new Vector2Int(i + 1, j)] != Wall) && (mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] == Wall) && (mapList[new Vector2Int(i, j - 1)] == Wall)
+                                && (mapList[new Vector2Int(i + 1, j + 1)] != Wall) && (mapList[new Vector2Int(i - 1, j + 1)] == Wall) && (mapList[new Vector2Int(i + 1, j - 1)] != Wall) && (mapList[new Vector2Int(i - 1, j - 1)] != Wall))
+                            {
+                                ceilingList[new Vector2Int(i, j + 1)] = 6;
+                                ceilingList[new Vector2Int(i, j)] = 14;
+                                continue;
+                            }
+                            if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i - 1, j)] == Wall) && ((mapList[new Vector2Int(i, j + 1)] != Wall) || (mapList[new Vector2Int(i, j - 1)] != Wall)))
+                            {
+                                ceilingList[new Vector2Int(i, j + 1)] = 13;
+                                continue;
+                            }
+                            if ((mapList[new Vector2Int(i + 1, j)] != Wall) && (mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] == Wall) && (mapList[new Vector2Int(i, j - 1)] == Wall)
+                                && (mapList[new Vector2Int(i + 1, j + 1)] != Wall) && (mapList[new Vector2Int(i - 1, j + 1)] == Wall) && (mapList[new Vector2Int(i + 1, j - 1)] != Wall)
+                                && (mapList[new Vector2Int(i - 1, j - 1)] == Wall) && (mapList[new Vector2Int(i, j - 2)] != Wall))
+                            {
+                                ceilingList[new Vector2Int(i, j)] = 14;
+                                continue;
+                            }
+                            {   //기본 경우의 수
+                                if ((mapList[new Vector2Int(i, j - 1)] == Wall) && ((mapList[new Vector2Int(i - 1, j)] != Wall) || (mapList[new Vector2Int(i + 1, j)] != Wall)))
+                                {
+                                    ceilingList[new Vector2Int(i, j)] = 14;
+                                }
+                                if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i, j - 1)] == Wall) && (mapList[new Vector2Int(i, j + 1)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 5;
+                                }
+                                if ((mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j - 1)] == Wall) && (mapList[new Vector2Int(i, j + 1)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 6;
+                                }
+                                if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] == Wall) && (mapList[new Vector2Int(i, j - 1)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 7;
+                                    continue;
+                                }
+                                if ((mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] == Wall) && (mapList[new Vector2Int(i, j - 1)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 4;
+                                    continue;
+                                }
+                                if ((mapList[new Vector2Int(i - 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] != Wall) && (mapList[new Vector2Int(i, j - 1)] != Wall) && (mapList[new Vector2Int(i + 1, j)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 2;
+                                }
+                                if ((mapList[new Vector2Int(i + 1, j)] == Wall) && (mapList[new Vector2Int(i, j + 1)] != Wall) && (mapList[new Vector2Int(i, j - 1)] != Wall) && (mapList[new Vector2Int(i - 1, j)] != Wall))
+                                {
+                                    ceilingList[new Vector2Int(i, j + 1)] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void OnDrawWall()
+        {
+            for (int i = -(mapSize.x / 2) - 1; i <= (mapSize.x / 2) + 1; i++)
+            {
+                for (int j = -(mapSize.y / 2) - 1; j <= (mapSize.y / 2) + 1; j++)
+                {
+                    if (wallList[new Vector2Int(i, j)] == true)
+                    {
+                        InstanceRandomTile(i, j, wallTiles, Wall);
+                    }
+                }
+            }
+        }
+
+        private void OnDrawCeiling(int x, int y)
+        {
+            for (int i = x - (mapSize.x / 2); i <= x + (mapSize.x / 2); i++)
+            {
                 for (int j = y - (mapSize.y / 2); j <= y + (mapSize.y / 2); j++)
                 {
-                    if (map[new Vector2Int(i, j)] == Wall)
+                    if (ceilingList[new Vector2Int(i, j)] != -1)
                     {
-                        //특별 예외
-                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall)
-                            && (map[new Vector2Int(i + 1, j + 1)] == Wall) && (map[new Vector2Int(i - 1, j + 1)] != Wall) && (map[new Vector2Int(i + 1, j - 1)] == Wall))
-                        {
-                            InstanceCeilingTile(i, j + 1, CeilingTiles, 6);
-                            continue;
-                        }
-                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
-                            && (map[new Vector2Int(i + 1, j + 1)] == Wall) && (map[new Vector2Int(i - 1, j + 1)] != Wall) && (map[new Vector2Int(i + 1, j - 1)] == Wall) && (map[new Vector2Int(i - 1, j - 1)] != Wall))
-                        {
-                            InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
-                            InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            continue;
-                        }
-                        if ((map[new Vector2Int(i + 1, j)] != Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
-                            && (map[new Vector2Int(i + 1, j + 1)] != Wall) && (map[new Vector2Int(i - 1, j + 1)] == Wall) && (map[new Vector2Int(i + 1, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j - 1)] != Wall))
-                        {
-                            InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
-                            InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            continue;
-                        }
-                        if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && ((map[new Vector2Int(i, j + 1)] != Wall) || (map[new Vector2Int(i, j - 1)] != Wall)))
-                        {
-                            InstanceCeilingTile(i, j + 1, CeilingTiles, 7);
-                            continue;
-                        }
-                        if ((map[new Vector2Int(i + 1, j)] != Wall) && (map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall)
-                            && (map[new Vector2Int(i + 1, j + 1)] != Wall) && (map[new Vector2Int(i - 1, j + 1)] == Wall) && (map[new Vector2Int(i + 1, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j - 1)] == Wall))
-                        {
-                            InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            continue;
-                        }
-                        {   //기본 경우의 수
-                            if ((map[new Vector2Int(i, j - 1)] == Wall) && ((map[new Vector2Int(i - 1, j)] != Wall) || (map[new Vector2Int(i + 1, j)] != Wall)))
-                            {
-                                InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            }
-                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 1);
-                                //InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            }
-                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j - 1)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 0);
-                                //InstanceCeilingTile(i, j, CeilingTiles, 2);
-                            }
-                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 5);
-                            }
-                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] == Wall) && (map[new Vector2Int(i, j - 1)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 6);
-                            }
-                            if ((map[new Vector2Int(i - 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] != Wall) && (map[new Vector2Int(i + 1, j)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 3);
-                            }
-                            if ((map[new Vector2Int(i + 1, j)] == Wall) && (map[new Vector2Int(i, j + 1)] != Wall) && (map[new Vector2Int(i, j - 1)] != Wall) && (map[new Vector2Int(i - 1, j)] != Wall))
-                            {
-                                InstanceCeilingTile(i, j + 1, CeilingTiles, 4);
-                            }
-                        }
+                        InstanceCeilingTile(i, j, CeilingTiles, ceilingList[new Vector2Int(i, j)]);
                     }
                 }
             }
@@ -392,7 +454,7 @@ namespace DungeonGenerator
                 new Vector3Int(x, y, 0)
                     , Quaternion.identity) as GameObject;
 
-            map[new Vector2Int(x, y)] = tile;
+            mapList[new Vector2Int(x, y)] = tile;
         }
 
         private void InstanceCeilingTile(int x, int y, GameObject[] Tiles, int n)
