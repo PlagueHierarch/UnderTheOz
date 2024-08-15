@@ -77,6 +77,10 @@ MonoBehaviour:
   - {fileID: 4282699304648205821, guid: 2edf53da79cef4548ab7be3dd49e17cf, type: 3}
   Player:
   - {fileID: 5824696189515206154, guid: f0593a57274b7814fb234944700b9318, type: 3}
+  Monster:
+  - {fileID: 5863130820536592290, guid: 3f521ebe9bffc9d44822e2b9cc37a556, type: 3}
+  - {fileID: 6419386056815019910, guid: 3911c8063ef9ffc45a93edb14b1dae15, type: 3}
+  - {fileID: 1683197088826629774, guid: 1aac444f2fe546649b780c07ac281f68, type: 3}
   mapSize: {x: 30, y: 30}
   maxNode: 3
   minDivideSize: 0.3
@@ -86,6 +90,7 @@ MonoBehaviour:
   lineHolder: {fileID: 0}
   rectangle: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
   _gameManager: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
+  monsterCounter: 10
   FloorPosition: []
 --- !u!114 &-2386965727922605425
 MonoBehaviour:

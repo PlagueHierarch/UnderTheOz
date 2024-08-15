@@ -3,10 +3,6 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class EntityClass : MonoBehaviour
-{   
-}
-
 public class Entity : ScriptableObject
 {
     [SerializeField]
@@ -34,4 +30,12 @@ public class PlayerStat : Entity
     private int lvupExp;
     public int LvUpExp { get { return lvupExp; } set { lvupExp = value; } }
     
+}
+
+[CreateAssetMenu(menuName = "ScriptableObjects/MonsterStats", order = 1)]
+public class MonsterStat : Entity
+{
+    [SerializeField]
+    private int giveExp;
+    public int GiveExp { get { return giveExp; } set { giveExp = value; } }
 }

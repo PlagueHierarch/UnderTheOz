@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace DungeonGenerator
 {
-    public class TreeNode
+       public class TreeNode
     {
         public TreeNode leftTree;
         public TreeNode rightTree;
@@ -17,6 +17,8 @@ namespace DungeonGenerator
         public RectInt dungeonSize;
         public bool isSpawnExit = false; //제일 왼쪽 노드에서만 하나 생성
         public bool isSpawnPlayer = false; //제일 오른쪽 노드에서만 하나 생성
+
+        
 
         public TreeNode(int x, int y, int width, int height)
         {
@@ -38,6 +40,7 @@ namespace DungeonGenerator
         [SerializeField] private GameObject[] VoidTile;
         [SerializeField] private GameObject[] ExitTile;
         [SerializeField] private GameObject[] Player;
+        [SerializeField] private GameObject[] Monster;
 
         [SerializeField] private Vector2Int mapSize;
 
@@ -51,6 +54,9 @@ namespace DungeonGenerator
         [SerializeField] private GameObject rectangle;
 
         [SerializeField] private GameObject _gameManager;
+
+        [SerializeField] private int monsterCounter;
+
         private BoardManager _boardManager;
 
         public Dictionary<Vector2Int, int> mapList = new Dictionary<Vector2Int, int>(); //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
@@ -180,6 +186,7 @@ namespace DungeonGenerator
 
         private void GenerateRoad(TreeNode treeNode, int n) //길 생성(재귀 함수)
         {
+            Transform parent = GameObject.Find("Floor").transform;
             if (n == maxNode)
             {
                 return;
@@ -196,6 +203,7 @@ namespace DungeonGenerator
                     new Vector3Int(x - mapSize.x / 2, y1 - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
                 mapList[new Vector2Int(x - mapSize.x / 2, y1 - mapSize.y / 2)] = Floor;
+                instance.transform.parent = parent;
             }
             for (int y = Mathf.Min(y1, y2); y <= Mathf.Max(y1, y2); y++)
             {
@@ -204,6 +212,7 @@ namespace DungeonGenerator
                     new Vector3Int(x2 - mapSize.x / 2, y - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
                 mapList[new Vector2Int(x2 - mapSize.x / 2, y - mapSize.y / 2)] = Floor;
+                instance.transform.parent = parent;
             }
             GenerateRoad(treeNode.leftTree, n + 1);
             GenerateRoad(treeNode.rightTree, n + 1);
@@ -224,6 +233,7 @@ namespace DungeonGenerator
             {
                 for (int j = y; j < y + height; j++)
                 {
+                    Transform parent = GameObject.Find("Floor").transform;
                     toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
                     GameObject instance = Instantiate(toInstantiate,
                         new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0)
@@ -231,6 +241,7 @@ namespace DungeonGenerator
 
                     mapList[new Vector2Int(i - mapSize.x / 2, j - mapSize.y / 2)] = Floor;
                     FloorPosition.Add(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
+                    instance.transform.parent = parent;
                 }
             }
             if(isLeft == true)
@@ -241,6 +252,7 @@ namespace DungeonGenerator
             {
                 GeneratePlayer(Player, FloorPosition);
             }
+            GenerateMonster(Monster, FloorPosition);
         }
 
         private void OnDrawRectangle(int x, int y, int width, int height) //가상의 사각형 선 생성(맵 최대 크기)
@@ -436,6 +448,11 @@ namespace DungeonGenerator
         {
             _boardManager.LayoutObjectAtRandom(player, 1, 1, gridPosition);
         }
+
+        private void GenerateMonster(GameObject[] monster, List<Vector3Int> gridPosition)
+        {
+            _boardManager.LayoutObjectAtRandom(monster, 1, 2, gridPosition);
+        }
         private int GetCenterX(RectInt size)
         {
             return size.x + size.width / 2;
@@ -448,6 +465,7 @@ namespace DungeonGenerator
 
         private void InstanceRandomTile(int x, int y, GameObject[] Tiles, int tile)
         {
+            Transform parent = GameObject.Find("Walls").transform;
             GameObject toInstantiate = VoidTile[0];
             toInstantiate = Tiles[Random.Range(0, Tiles.Length)];
             GameObject instance = Instantiate(toInstantiate,
@@ -455,15 +473,18 @@ namespace DungeonGenerator
                     , Quaternion.identity) as GameObject;
 
             mapList[new Vector2Int(x, y)] = tile;
+            instance.transform.parent = parent;
         }
 
         private void InstanceCeilingTile(int x, int y, GameObject[] Tiles, int n)
         {
+            Transform parent = GameObject.Find("Ceiling").transform;
             GameObject toInstantiate = VoidTile[0];
             toInstantiate = Tiles[n];
             GameObject instance = Instantiate(toInstantiate,
                 new Vector3Int(x, y, 0)
                     , Quaternion.identity) as GameObject;
+            instance.transform.parent = parent;
         }
     }
 }

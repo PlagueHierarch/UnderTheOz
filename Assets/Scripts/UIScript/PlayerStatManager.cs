@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class PlayerStatManager : MonoBehaviour
 {
+    public static PlayerStatManager instance;
+
     [SerializeField] private PlayerStat baseStats;
     [SerializeField] private PlayerStat statsModifier;
     public PlayerStat curStats  { get; private set; } 
@@ -48,6 +50,17 @@ public class PlayerStatManager : MonoBehaviour
 
     private void Awake()
     {
+        if (instance == null)
+        {
+            instance = this;
+        }
+        else if (instance != this)
+        {
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(gameObject);
+
         curStats = ScriptableObject.CreateInstance<PlayerStat>();
         texts[0].text = $"{baseStats.HP} / {baseStats.MaxHP}";
         initStat();

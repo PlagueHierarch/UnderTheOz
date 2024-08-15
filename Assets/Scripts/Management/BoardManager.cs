@@ -28,7 +28,7 @@ public class BoardManager : MonoBehaviour
         return randomPosition;
     }
 
-    public void LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, List<Vector3Int> gridPosition)
+    public int LayoutObjectAtRandom(GameObject[] tileArray, int minimum, int maximum, List<Vector3Int> gridPosition)
     {
         int objectCount = Random.Range (minimum, maximum + 1);
 
@@ -37,7 +37,13 @@ public class BoardManager : MonoBehaviour
             Vector3Int randomPosisiton = RandomPosition(gridPosition);
             GameObject tileChoice = tileArray[Random.Range (0, tileArray.Length)];
             Instantiate(tileChoice, randomPosisiton, Quaternion.identity);
+            if(tileChoice.tag == "Monster")
+            {
+                GameManager.instance.monsters.Add(tileChoice);
+            }
+                
         }
+        return objectCount;
     }
 
     public void SetupScence(int stage)

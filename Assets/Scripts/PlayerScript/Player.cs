@@ -34,11 +34,11 @@ public class Player : MovingObject
         CameraMove();
         if (!GameManager.instance.playersTurn)
         {
-            return;
+            InputKey();
         }
         else if (GameManager.instance.playersTurn)
         {
-            InputKey();
+            return;
         }
     }
 
@@ -46,7 +46,8 @@ public class Player : MovingObject
     {
         base.AttemptMove<T>(xDir, yDir);
 
-        GameManager.instance.playersTurn = false;
+        GameManager.instance.playersTurn = true;
+
     }
 
     private void InputKey() //8키 방향 이동 및 공격 함수
@@ -57,7 +58,7 @@ public class Player : MovingObject
         if(Input.GetKey(KeyCode.Space))
         {
             _animator.SetTrigger("isAttack");
-            GameManager.instance.playersTurn = false;
+            GameManager.instance.playersTurn = true;
         }
 
         if (Input.GetKey(KeyCode.Keypad8))

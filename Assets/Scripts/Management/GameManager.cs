@@ -6,12 +6,20 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public float turnDelay;
-    /*[HideInInspector] */public bool playersTurn = true;
+    /*[HideInInspector] */public bool playersTurn = false;
+    public bool enemysTurn = false;
+    private bool playerTurnEnd = false;
+    private bool enemyTurnEnd = false;
+
+    public List<GameObject> monsters;
+    public List<GameObject> monstersEnd;
+
     public static GameManager instance = null;
 
     public int stage = 0;
 
     [SerializeField] private GameObject boardManager;
+    [SerializeField] GameObject turnIndicator;
 
     private float playerTimer = 0f;
     private float enemiesTimer = 0f;
@@ -19,6 +27,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+
         stage = 0;
         if(instance == null)
         {
@@ -30,6 +39,13 @@ public class GameManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+    }
+
+    private void Start()
+    {
+        StartCoroutine(PlayerTurn());
+        Debug.Log("C" + monsters.Count);
+        //turnIndicator = GameObject.Find("turnIndicator");
     }
 
 
@@ -46,13 +62,21 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         Timer();
-        if (playersTurn) //원래 상대(몬스터)의 턴이 끝나면 바뀌여야 하지만 아직 몬스터가 없으므로 바로 플레이어 턴으로 바뀜
+        //Debug.Log("C" + monsters.Count);
+        //Debug.Log("AC" + monstersEnd.Count);
+        if (monsters.Count == monstersEnd.Count && enemysTurn && enemyTurnEnd) //원래 상대(몬스터)의 턴이 끝나면 바뀌여야 하지만 아직 몬스터가 없으므로 바로 플레이어 턴으로 바뀜
         {
-            return;
+            turnIndicator.SetActive(false);
+            Debug.Log("플레이어 턴");
+            StartCoroutine(PlayerTurn());
         }
-        else if(!playersTurn)
+        else if (playerTurnEnd && playersTurn) 
         {
-            EnemiesTurn();
+            turnIndicator.SetActive(true);
+            //Debug.Log(GameManager.instance.playersTurn);
+            Debug.Log("상대 턴");
+            StartCoroutine(EnemiesTurn());
+            
         }
     }
 
@@ -61,27 +85,41 @@ public class GameManager : MonoBehaviour
         enemiesTimer += Time.deltaTime;
         playerTimer += Time.deltaTime;
     }
-    private void EnemiesTurn()
+    private IEnumerator EnemiesTurn()
     {
-        Debug.Log("상대 턴");
-        if (enemiesTimer >= turnDelay)
+        enemysTurn = true;
+        playersTurn = false;
+        playerTurnEnd = false;
+        /*if (enemiesTimer >= turnDelay)
         {
-            MoveEnemies();
-            PlayerTurn();
+            Debug.Log(enemiesTimer);
+            Debug.Log("상대 턴");
+            enemyTurnEnd = true;
             enemiesTimer = 0f;
-        }
+        }*/
+        yield return new WaitForSeconds(turnDelay);
+        enemyTurnEnd = true;
     }
-    private void PlayerTurn()
+    private IEnumerator PlayerTurn()
     {
-        if (playerTimer >= turnDelay)
+        enemysTurn = false;
+        enemyTurnEnd = false;
+        monstersEnd.Clear();
+        yield return new WaitForSeconds(turnDelay);
+        /*if (playerTimer >= turnDelay)
         {
-            playersTurn = true;
+            Debug.Log(playerTimer);
+            playerTurnEnd = true;
+            Debug.Log("플레이어 턴");
             playerTimer = 0f;
-        }
+        }*/
+        yield return new WaitUntil(() => playersTurn == true);
+        playerTurnEnd = true;
+        
     }
     private void MoveEnemies()
     {
-        Debug.Log("상대 움직임");
+        //Debug.Log("상대 움직임");
     }
 
 }
