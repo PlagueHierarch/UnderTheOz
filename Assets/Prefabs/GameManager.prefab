@@ -45,6 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turnDelay: 1
+  playersTurn: 1
+  enemysTurn: 0
+  monsters: []
+  monstersEnd: []
   stage: 1
   boardManager: {fileID: 1970680844797078128, guid: d1ac814d03945e740b3ab51f0ce43696, type: 3}
-  playersTurn: 1
+  turnIndicator: {fileID: 0}

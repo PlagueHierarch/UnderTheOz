@@ -915,10 +915,6 @@ PrefabInstance:
       value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
-      propertyPath: turnDelay
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
       propertyPath: turnIndicator
       value: 
       objectReference: {fileID: 6651357}
