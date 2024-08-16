@@ -5,6 +5,8 @@ using UnityEngine;
 using System;
 using static UnityEditor.Experimental.GraphView.GraphView;
 using UnityEngine.SceneManagement;
+using DungeonGenerator;
+using Unity.VisualScripting;
 
 public class Player : MovingObject
 {
@@ -15,15 +17,22 @@ public class Player : MovingObject
     private Animator _animator;
     private GameManager _gameManager;
     private SpriteRenderer _animationSpriteRenderer;
+    private DungeonGenerator.DungeonGenerator _dungeonGenerator;
+    private BoardManager _boardManager;
 
-
-    protected override void Start()
+    private void ReferenceComponent()
     {
+        _boardManager = GameObject.Find("BoardManager(Clone)").GetComponent<BoardManager>();
+        _dungeonGenerator = GameObject.Find("BoardManager(Clone)").GetComponent<DungeonGenerator.DungeonGenerator>();
         _camera = GameObject.Find("Main Camera");
         _animator = _playerAnimation.GetComponent<Animator>();
         _gameManager = _gameManagerObject.GetComponent<GameManager>();
         _animationSpriteRenderer = _playerAnimation.GetComponent<SpriteRenderer>();
-        
+    }
+
+    protected override void Start()
+    {
+        ReferenceComponent();
         base.Start();
     }
 
@@ -35,6 +44,7 @@ public class Player : MovingObject
         if (!GameManager.instance.playersTurn)
         {
             InputKey();
+            InputKeyDown();
         }
         else if (GameManager.instance.playersTurn)
         {
@@ -50,16 +60,17 @@ public class Player : MovingObject
 
     }
 
+    private void InputKeyDown()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            RandomTeleport();
+        }
+    }
     private void InputKey() //8키 방향 이동 및 공격 함수
     {
         int horizontal = 0;
         int vertical = 0;
-
-        if(Input.GetKey(KeyCode.Space))
-        {
-            _animator.SetTrigger("isAttack");
-            GameManager.instance.playersTurn = true;
-        }
 
         if (Input.GetKey(KeyCode.Keypad8))
         {
@@ -121,11 +132,11 @@ public class Player : MovingObject
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void OnTriggerEnter2D(Collider2D other) //탈출구에 들어갔을 때 호출
     {
-        LayerMask _layer = other.gameObject.layer;
-        if(_layer == 7)
+        if(other.gameObject.layer == 8)
         {
+            Debug.Log("계단");
             _gameManager.stage += 1;
             if(_gameManager.stage == 1)
             {
@@ -154,9 +165,20 @@ public class Player : MovingObject
         }
     }
 
-    protected override void OnCantMove<T>(T component)
+    private void RandomTeleport()
     {
+        Vector3Int randomPosisiton = _boardManager.RandomPosition(_dungeonGenerator.FloorPosition);
+        transform.position = randomPosisiton;
+    }
 
+    protected override void OnCantMove<T>(T component) //벽이나 다른 물체에 막혔을때 호출
+    {
+        GameObject other = component as GameObject;
+        if(other.CompareTag("Monster"))
+        {
+            //몬스터 체력 감소
+            _animator.SetTrigger("isAttack");
+        }
     }
 
     void CameraMove()

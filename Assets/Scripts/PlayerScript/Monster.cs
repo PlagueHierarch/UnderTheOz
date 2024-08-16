@@ -18,7 +18,6 @@ public class Monster : MovingObject
 
     private void Update()
     { 
-
         if (!GameManager.instance.monstersEnd.Contains(gameObject) && GameManager.instance.enemysTurn)
         {
             //Debug.Log("not moving");

@@ -63,7 +63,9 @@ namespace DungeonGenerator
         public Dictionary<Vector2Int, bool> wallList = new Dictionary<Vector2Int, bool>();
         public Dictionary<Vector2Int, int> ceilingList = new Dictionary<Vector2Int, int>();
         
-        public List<Vector3Int> FloorPosition = new List<Vector3Int>(); //바닥타일 좌표만 저장
+        public List<Vector3Int> RoomPosition = new List<Vector3Int>(); //방 바닥타일 좌표만 저장
+        public List<Vector3Int> FloorPosition = new List<Vector3Int>(); //전체 바닥타일 좌표만 저장
+
 
         private enum Tile_num //0 : 빈 공간, 1 : 바닥 타일, 2 : 벽 타일, 3 : 천장 타일, 4 : 벽 + 천장
         {
@@ -93,6 +95,7 @@ namespace DungeonGenerator
             }
 
             ReferenceComponent();
+            FloorPosition.Clear();
             mapList.Clear();
             OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //맵의 총 크기 그림 + 딕셔너리에 정보 저장
             TreeNode rootNode = new TreeNode(0, 0, mapSize.x, mapSize.y); //첫 뿌리 노드 생성
@@ -203,6 +206,7 @@ namespace DungeonGenerator
                     new Vector3Int(x - mapSize.x / 2, y1 - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
                 mapList[new Vector2Int(x - mapSize.x / 2, y1 - mapSize.y / 2)] = Floor;
+                FloorPosition.Add(new Vector3Int(x -mapSize.x / 2, y1 - mapSize.y / 2));
                 instance.transform.parent = parent;
             }
             for (int y = Mathf.Min(y1, y2); y <= Mathf.Max(y1, y2); y++)
@@ -212,6 +216,8 @@ namespace DungeonGenerator
                     new Vector3Int(x2 - mapSize.x / 2, y - mapSize.y / 2, 0)
                         , Quaternion.identity) as GameObject;
                 mapList[new Vector2Int(x2 - mapSize.x / 2, y - mapSize.y / 2)] = Floor;
+                FloorPosition.Add(new Vector3Int(x2 - mapSize.x / 2, y - mapSize.y / 2));
+
                 instance.transform.parent = parent;
             }
             GenerateRoad(treeNode.leftTree, n + 1);
@@ -227,7 +233,7 @@ namespace DungeonGenerator
 
         private void OnDrawDungeon(int x, int y, int width, int height, bool isLeft, bool isRight) //방 생성
         {
-            FloorPosition.Clear();
+            RoomPosition.Clear();
             GameObject toInstantiate = VoidTile[0];
             for (int i = x; i < x + width; i++)
             {
@@ -240,19 +246,21 @@ namespace DungeonGenerator
                             , Quaternion.identity) as GameObject;
 
                     mapList[new Vector2Int(i - mapSize.x / 2, j - mapSize.y / 2)] = Floor;
+                    RoomPosition.Add(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
                     FloorPosition.Add(new Vector3Int(i - mapSize.x / 2, j - mapSize.y / 2, 0));
+
                     instance.transform.parent = parent;
                 }
             }
             if(isLeft == true)
             {
-                GenerateExit(ExitTile, FloorPosition);
+                GenerateExit(ExitTile, RoomPosition);
             }
             if(isRight == true)
             {
-                GeneratePlayer(Player, FloorPosition);
+                GeneratePlayer(Player, RoomPosition);
             }
-            GenerateMonster(Monster, FloorPosition);
+            GenerateMonster(Monster, RoomPosition);
         }
 
         private void OnDrawRectangle(int x, int y, int width, int height) //가상의 사각형 선 생성(맵 최대 크기)

@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1776177502803198248}
   - component: {fileID: 542107785559563881}
   - component: {fileID: 2220814999293808092}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Monster2
   m_TagString: Monster
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ MonoBehaviour:
   moveTime: 0.05
   blockingLayer:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   playerLayer:
     serializedVersion: 2
     m_Bits: 128

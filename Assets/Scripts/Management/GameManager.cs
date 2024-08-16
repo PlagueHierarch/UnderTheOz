@@ -64,7 +64,7 @@ public class GameManager : MonoBehaviour
         Timer();
         //Debug.Log("C" + monsters.Count);
         //Debug.Log("AC" + monstersEnd.Count);
-        if (monsters.Count == monstersEnd.Count && enemysTurn && enemyTurnEnd) //원래 상대(몬스터)의 턴이 끝나면 바뀌여야 하지만 아직 몬스터가 없으므로 바로 플레이어 턴으로 바뀜
+        if (monsters.Count == monstersEnd.Count && enemysTurn && enemyTurnEnd)
         {
             turnIndicator.SetActive(false);
             Debug.Log("플레이어 턴");
