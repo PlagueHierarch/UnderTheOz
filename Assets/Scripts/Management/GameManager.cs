@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     void Awake()
     {
 
-        stage = 0;
+        stage = 1;
         if(instance == null)
         {
              instance = this;

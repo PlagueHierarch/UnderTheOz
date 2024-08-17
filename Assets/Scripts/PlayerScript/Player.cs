@@ -30,13 +30,12 @@ public class Player : MovingObject
         _dungeonGenerator = GameObject.Find("BoardManager(Clone)").GetComponent<DungeonGenerator.DungeonGenerator>();
         _camera = GameObject.Find("Main Camera");
         _animator = _playerAnimation.GetComponent<Animator>();
-        _gameManager = _gameManagerObject.GetComponent<GameManager>();
+        _gameManager = GameManager.instance;
         _animationSpriteRenderer = _playerAnimation.GetComponent<SpriteRenderer>();
     }
 
     protected override void Start()
     {
-        _gameManager = GameManager.instance;
         ReferenceComponent();
         base.Start();
     }
@@ -46,12 +45,12 @@ public class Player : MovingObject
         _animator.SetBool("isMoving", false);
 
         CameraMove();
-        if (!GameManager.instance.playersTurn)
+        if (!_gameManager.playersTurn)
         {
             InputKey();
             InputKeyDown();
         }
-        else if (GameManager.instance.playersTurn)
+        else if (_gameManager.playersTurn)
         {
             return;
         }
@@ -61,7 +60,7 @@ public class Player : MovingObject
     {
         base.AttemptMove<T>(xDir, yDir);
 
-        GameManager.instance.playersTurn = true;
+        _gameManager.playersTurn = true;
 
     }
 
@@ -147,7 +146,7 @@ public class Player : MovingObject
         {
             Debug.Log("°è´Ü");
             _gameManager.stage += 1;
-            if(_gameManager.stage == 1)
+            /*if(_gameManager.stage == 1)
             {
                 SceneManager.LoadScene("Stage 1");
             }
@@ -166,10 +165,14 @@ public class Player : MovingObject
             else if (_gameManager.stage == 5)
             {
                 SceneManager.LoadScene("Stage 5");
-            }
-            else if (_gameManager.stage > 5)
+            }*/
+             if (_gameManager.stage > 5)
             {
                 SceneManager.LoadScene("Stage Boss");
+            }
+            else
+            {
+                SceneManager.LoadScene("Stage " + _gameManager.stage);
             }
 
         }
