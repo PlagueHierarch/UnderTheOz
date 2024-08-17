@@ -2,19 +2,9 @@ using DungeonGenerator;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class GameManager : MonoBehaviour
 {
-    public static GameManager s_instance;
-    public static GameManager instance { get { Init(); return s_instance; } }
-
-    public SoundManager _sound = new SoundManager();
-    public ResourceManager _resource = new ResourceManager();
-    public static ResourceManager Resource { get { return instance._resource; } }
-    public static SoundManager Sound { get { return instance._sound; } }
-
-
     public float turnDelay;
     /*[HideInInspector] */public bool playersTurn = false;
     public bool enemysTurn = false;
@@ -23,6 +13,8 @@ public class GameManager : MonoBehaviour
 
     public List<GameObject> monsters;
     public List<GameObject> monstersEnd;
+
+    public static GameManager instance = null;
 
     public int stage = 0;
 
@@ -35,33 +27,32 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+
         stage = 0;
+        if(instance == null)
+        {
+             instance = this;
+        }
+        else if(instance != this)
+        {
+            Destroy(gameObject);
+        }
+
+        DontDestroyOnLoad(gameObject);
     }
+
     private void Start()
     {
         StartCoroutine(PlayerTurn());
         Debug.Log("C" + monsters.Count);
         //turnIndicator = GameObject.Find("turnIndicator");
-        Init();
     }
-    static void Init()
+
+
+    void InitGame()
     {
-        if (s_instance == null)
-        {
-            GameObject obj = Resources.Load<GameObject>($"Prefab/GameManager"); 
-            if (obj == null)
-            {
-                obj = new GameObject { name = "GameManager" };
-                obj.AddComponent<GameManager>();
-            }
 
-            DontDestroyOnLoad(obj);
-            s_instance = obj.GetComponent<GameManager>();
-
-            s_instance._sound.Init();
-        }
     }
-
 
     public void GameOver()
     {
