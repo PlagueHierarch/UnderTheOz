@@ -81,7 +81,7 @@ namespace DungeonGenerator
         {
             _boardManager = GetComponent<BoardManager>();
         }
-        private void Awake()
+        private void Start()
         {
             _boardManager = _gameManager.GetComponent<BoardManager>();
             if (dungeonInstance == null)

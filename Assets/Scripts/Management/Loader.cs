@@ -6,8 +6,9 @@ using UnityEngine;
 public class Loader : MonoBehaviour
 {
     [SerializeField] private GameObject boardManager;
-    private static Loader instance;
+    [SerializeField] private GameObject _soundManager;
 
+    private static Loader instance;
     void Awake()
     {
         if (instance == null)
@@ -25,6 +26,10 @@ public class Loader : MonoBehaviour
         {
             Instantiate(boardManager);
         }
+        //if (SoundManager.soundInstance == null)
+        //{
+        //    Instantiate(_soundManager);
+        //}
     }
 
 }

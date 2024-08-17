@@ -10,13 +10,23 @@ public class SoundManager : MonoBehaviour
         Effect,
         MaxCount,
     }
+
+    //public static SoundManager soundInstance = null;
+
     public AudioSource[] _audioSources = new AudioSource[(int)Sound.MaxCount];
     public Dictionary<string, AudioClip> _audioClips = new Dictionary<string, AudioClip>();
 
     private void Start()
     {
+        //if (soundInstance == null)
+        //{
+        //    soundInstance = this;
+        //}
+        //else if (soundInstance != this)
+        //{
+        //    Destroy(gameObject);
+        //}
         //Clear();
-        Init();
     }
 
 
@@ -52,6 +62,7 @@ public class SoundManager : MonoBehaviour
     }
     public void Play(AudioClip audioClip, Sound type = Sound.Effect, float pitch = 1.0f)
     {
+
         if (audioClip == null)
         {
             return;
@@ -77,8 +88,17 @@ public class SoundManager : MonoBehaviour
         }
     }
 
-    public void Play(string path, Sound type = Sound.Effect, float pitch = 1.0f)
+    public void Play(string path, string _type = "Effect", float pitch = 1.0f)
     {
+        Sound type = Sound.Effect;
+        if (_type == "Bgm")
+        {
+            type = Sound.Bgm;
+        }
+        else
+        {
+            type = Sound.Effect;
+        }
         AudioClip audioClip = GetOrAddAudioClip(path, type);
         Play(audioClip, type, pitch);
     }
@@ -103,7 +123,9 @@ public class SoundManager : MonoBehaviour
         }
 
         if (audioClip == null)
+        {
             Debug.Log($"AudioClip Missing ! {path}");
+        }
 
         return audioClip;
     }

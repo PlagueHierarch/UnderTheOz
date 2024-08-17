@@ -10,6 +10,7 @@ using Unity.VisualScripting;
 
 public class Player : MovingObject
 {
+
     [SerializeField] private GameObject _gameManagerObject;
     [SerializeField] private GameObject _playerAnimation;
     [SerializeField] private GameObject _camera;
@@ -22,7 +23,6 @@ public class Player : MovingObject
     private BoardManager _boardManager;
     private SpriteRenderer _boomSprite;
     
-
     private void ReferenceComponent()
     {
         _boomSprite = _boomEffect.GetComponent<SpriteRenderer>();
@@ -32,6 +32,11 @@ public class Player : MovingObject
         _animator = _playerAnimation.GetComponent<Animator>();
         _gameManager = GameManager.instance;
         _animationSpriteRenderer = _playerAnimation.GetComponent<SpriteRenderer>();
+    }
+
+    private void Awake()
+    {
+        
     }
 
     protected override void Start()
@@ -123,6 +128,7 @@ public class Player : MovingObject
 
         if (horizontal != 0 || vertical != 0)
         {
+            
             _animator.SetBool("isMoving", true);
             if (horizontal < 0)
             {
@@ -220,6 +226,10 @@ public class Player : MovingObject
             //몬스터 체력 감소
             _animator.SetTrigger("isAttack");
         }
+    }
+    protected override void OnCanMove<T>(T component)
+    {
+        GameManager.Sound.Play("PlayerStep001");
     }
 
     void CameraMove()

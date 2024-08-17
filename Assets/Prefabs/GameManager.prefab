@@ -52,3 +52,4 @@ MonoBehaviour:
   stage: 1
   boardManager: {fileID: 1970680844797078128, guid: d1ac814d03945e740b3ab51f0ce43696, type: 3}
   turnIndicator: {fileID: 0}
+  soundManager: {fileID: 0}

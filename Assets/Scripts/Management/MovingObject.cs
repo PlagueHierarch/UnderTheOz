@@ -32,6 +32,7 @@ public abstract class MovingObject : MonoBehaviour
         if(hit.transform == null && !isMoving)
         {
             StartCoroutine(SmoothMovement(end));
+            OnCanMove(0);
             return true;
         }
         return false;
@@ -71,6 +72,6 @@ public abstract class MovingObject : MonoBehaviour
         }
     }
     protected abstract void OnCantMove <T>(T component)
-        where T : Component; 
-    
+        where T : Component;
+    protected abstract void OnCanMove<T>(T component);
 }

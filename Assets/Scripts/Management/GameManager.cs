@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    SoundManager _sound = new SoundManager();
+    public static SoundManager Sound { get { return instance._sound; } }
+
     public float turnDelay;
     /*[HideInInspector] */public bool playersTurn = false;
     public bool enemysTurn = false;
@@ -20,6 +23,7 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject boardManager;
     [SerializeField] GameObject turnIndicator;
+    [SerializeField] private GameObject soundManager;
 
     private float playerTimer = 0f;
     private float enemiesTimer = 0f;
@@ -40,7 +44,6 @@ public class GameManager : MonoBehaviour
 
         DontDestroyOnLoad(gameObject);
 
-        
     }
 
     private void Start()
@@ -49,6 +52,8 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("C" + monsters.Count);
         //turnIndicator = GameObject.Find("turnIndicator");
+        instance._sound.Init();
+        _sound.Play("Sounds/Bgm001", "Bgm");
     }
 
 
@@ -69,7 +74,7 @@ public class GameManager : MonoBehaviour
         //Debug.Log("AC" + monstersEnd.Count);
         if (monsters.Count <= monstersEnd.Count && enemysTurn && enemyTurnEnd)
         {
-            turnIndicator.SetActive(false);
+            turnIndicator.SetActive(false); 
             //Debug.Log("플레이어 턴");
             StartCoroutine(PlayerTurn());
         }

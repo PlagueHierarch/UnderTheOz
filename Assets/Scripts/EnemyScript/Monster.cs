@@ -90,4 +90,8 @@ public class Monster : MovingObject
     {
 
     }
+    protected override void OnCanMove<T>(T component)
+    {
+
+    }
 }

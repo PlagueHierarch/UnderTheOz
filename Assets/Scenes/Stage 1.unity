@@ -1830,6 +1830,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 0}
     - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
+      propertyPath: soundManager
+      value: 
+      objectReference: {fileID: 7254588928647146398, guid: 279a6c83e2fe1614a97da0ade1ef3560, type: 3}
+    - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
       propertyPath: turnIndicator
       value: 
       objectReference: {fileID: 244186318}
@@ -2209,6 +2213,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Main Camera
       objectReference: {fileID: 0}
+    - target: {fileID: 5187217602665651242, guid: 231acab04470e0042a3e01fd80bc4e0d, type: 3}
+      propertyPath: _soundManager
+      value: 
+      objectReference: {fileID: 7254588928647146398, guid: 279a6c83e2fe1614a97da0ade1ef3560, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
