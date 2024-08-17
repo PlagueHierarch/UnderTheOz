@@ -8,6 +8,7 @@ using DungeonGenerator;
 
 public class BoardManager : MonoBehaviour
 {
+
     private Transform boardHolder;
     private List <Vector3> gridPositions = new List<Vector3> ();
 

@@ -39,11 +39,14 @@ public class GameManager : MonoBehaviour
         }
 
         DontDestroyOnLoad(gameObject);
+
+        
     }
 
     private void Start()
     {
         StartCoroutine(PlayerTurn());
+
         Debug.Log("C" + monsters.Count);
         //turnIndicator = GameObject.Find("turnIndicator");
     }
@@ -64,17 +67,17 @@ public class GameManager : MonoBehaviour
         Timer();
         //Debug.Log("C" + monsters.Count);
         //Debug.Log("AC" + monstersEnd.Count);
-        if (monsters.Count == monstersEnd.Count && enemysTurn && enemyTurnEnd)
+        if (monsters.Count <= monstersEnd.Count && enemysTurn && enemyTurnEnd)
         {
             turnIndicator.SetActive(false);
-            Debug.Log("플레이어 턴");
+            //Debug.Log("플레이어 턴");
             StartCoroutine(PlayerTurn());
         }
         else if (playerTurnEnd && playersTurn) 
         {
             turnIndicator.SetActive(true);
             //Debug.Log(GameManager.instance.playersTurn);
-            Debug.Log("상대 턴");
+            //Debug.Log("상대 턴");
             StartCoroutine(EnemiesTurn());
             
         }

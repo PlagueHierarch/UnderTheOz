@@ -5,7 +5,6 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using System.Runtime.CompilerServices;
 using System.Threading;
-
 namespace DungeonGenerator
 {
        public class TreeNode
@@ -93,6 +92,9 @@ namespace DungeonGenerator
             {
                 Destroy(gameObject);
             }
+
+            GameManager.instance.monsters.Clear();
+            Debug.Log("스테이지" + GameManager.instance.stage);
 
             ReferenceComponent();
             FloorPosition.Clear();

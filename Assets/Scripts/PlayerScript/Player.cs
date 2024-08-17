@@ -36,6 +36,7 @@ public class Player : MovingObject
 
     protected override void Start()
     {
+        _gameManager = GameManager.instance;
         ReferenceComponent();
         base.Start();
     }
@@ -170,6 +171,7 @@ public class Player : MovingObject
             {
                 SceneManager.LoadScene("Stage Boss");
             }
+
         }
     }
 

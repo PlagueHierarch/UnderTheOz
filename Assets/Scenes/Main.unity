@@ -333,7 +333,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   baseStats: {fileID: 11400000, guid: 0745cab947d21584b8793aa338b67ea9, type: 2}
-  statsModifier: {fileID: 11400000, guid: c2775469fbe23ea4ca20f1a09447f8cb, type: 2}
+  statsModifier: {fileID: 11400000, guid: 156bebeb5a39ecc4ba3adba62c07e825, type: 2}
   bars:
   - {fileID: 575095299}
   - {fileID: 845027954}
@@ -915,6 +915,10 @@ PrefabInstance:
       value: GameManager
       objectReference: {fileID: 0}
     - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
+      propertyPath: boardManager
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4101887192996539098, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
       propertyPath: turnIndicator
       value: 
       objectReference: {fileID: 6651357}
@@ -1346,37 +1350,6 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 939226618}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &992464989
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 992464990}
-  m_Layer: 0
-  m_Name: Monsters
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &992464990
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 992464989}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -2250,5 +2223,4 @@ SceneRoots:
   - {fileID: 939226619}
   - {fileID: 258486581}
   - {fileID: 97503227}
-  - {fileID: 992464990}
   - {fileID: 288232758}

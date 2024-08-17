@@ -55,7 +55,7 @@ public class Monster : MovingObject
         {
             target = col.transform;
             distance = Vector2.Distance(target.transform.position, gameObject.transform.position);
-            Debug.Log(distance);
+            //Debug.Log(distance);
             if (distance > 1.5f)
                 CalDist();
             GameManager.instance.monstersEnd.Add(gameObject);
@@ -86,11 +86,6 @@ public class Monster : MovingObject
         target = null; 
     } */
 
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = gizmoColor;
-        Gizmos.DrawSphere(transform.position, distance);
-    }
     protected override void OnCantMove<T>(T component)
     {
 
