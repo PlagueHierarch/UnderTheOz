@@ -62,6 +62,10 @@ public class GameManager : MonoBehaviour
         {
             _sound.Play("Sounds/Bgm001", "Bgm");
         }
+        else if (stage == 6)
+        {
+            _sound.Play("Sounds/BossBgm001", "Bgm");
+        }
     }
 
     private void isScenceLoad()
