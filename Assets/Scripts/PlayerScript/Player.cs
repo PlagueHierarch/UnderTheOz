@@ -133,7 +133,6 @@ public class Player : MovingObject
         if (horizontal != 0 || vertical != 0)
         {
             
-            _animator.SetBool("isMoving", true);
             if (horizontal < 0)
             {
                 _animator.SetInteger("Direction", -1); //음수가 왼쪽 양수가 오른쪽
@@ -190,12 +189,15 @@ public class Player : MovingObject
 
     /*private void RandomTeleport() //텔레포트 스크롤 스크립트
     {
+
         Vector3Int randomPosisiton = _boardManager.RandomPosition(_dungeonGenerator.FloorPosition);
         transform.position = randomPosisiton;
     }
 
     private void Bomb() //반경 5타일 내에 20 데미지
     {
+        GameManager.Sound.Play("Sounds/Bomb001");
+
         Vector2 playerPosition = transform.position;
         Vector2 rayPosition;
 
@@ -238,6 +240,7 @@ public class Player : MovingObject
         }
         else if (hit.collider.gameObject.CompareTag("Monster"))
         {
+            GameManager.Sound.Play("Sounds/HitMonster001");
             _animator.SetTrigger("isAttack");
             GameObject target = hit.collider.gameObject;
             //target.GetComponent<MonsterStatManager>().curStat.HP -= 20;
@@ -246,11 +249,13 @@ public class Player : MovingObject
     }
     protected override void OnCanMove<T>(T component)
     {
+        _animator.SetBool("isMoving", true);
         GameManager.Sound.Play("PlayerStep001");
+
     }
 
     void CameraMove()
     {
-        _camera.transform.position = Vector3.Lerp(_camera.transform.position, new Vector3(transform.position.x, transform.position.y, -10f), 0.7f);
+        _camera.transform.position = Vector3.Lerp(_camera.transform.position, new Vector3(transform.position.x, transform.position.y, -10f), 0.01f);
     }
 }
