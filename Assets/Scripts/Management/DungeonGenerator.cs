@@ -40,6 +40,8 @@ namespace DungeonGenerator
         [SerializeField] private GameObject[] ExitTile;
         [SerializeField] private GameObject[] Player;
         [SerializeField] private GameObject[] Monster;
+        [SerializeField] private GameObject BossWall;
+        [SerializeField] private GameObject Column;
 
         [SerializeField] private Vector2Int mapSize;
 
@@ -83,7 +85,8 @@ namespace DungeonGenerator
         }
         private void Start()
         {
-            _boardManager = _gameManager.GetComponent<BoardManager>();
+            ReferenceComponent();
+
             if (dungeonInstance == null)
             {
                 dungeonInstance = this;
@@ -96,16 +99,18 @@ namespace DungeonGenerator
             GameManager.instance.monsters.Clear();
             Debug.Log("스테이지" + GameManager.instance.stage);
 
-            if(GameManager.instance.stage == 1 || GameManager.instance.stage == 2 || GameManager.instance.stage == 3 ||
-                GameManager.instance.stage == 4 || GameManager.instance.stage == 5)
+            if(GameManager.instance.stage >= 1 && GameManager.instance.stage <= 5)
             {
                 startGenerate();
+            }
+            else if(GameManager.instance.stage == 6)
+            {
+                startBossGenerate();
             }
         }
 
         private void startGenerate()
         {
-            ReferenceComponent();
             FloorPosition.Clear();
             mapList.Clear();
             OnDrawRectangle(0, 0, mapSize.x, mapSize.y); //맵의 총 크기 그림 + 딕셔너리에 정보 저장
@@ -119,6 +124,51 @@ namespace DungeonGenerator
             GenerateCeiling(0, 0);
             OnDrawCeiling(0, 0);
             OnDrawWall();
+        }
+
+        private void startBossGenerate()
+        {
+            FloorPosition.Clear();
+            mapList.Clear();
+            OnDrawRectangle(0, 0, 9, 16);
+
+            for(int x = -4; x <= 4; x++)
+            {
+                for(int y = -9; y <= 8; y++)
+                {
+                    GameObject toInstantiate = VoidTile[0];
+                    if ((x >= -3 && x <= 3) && (y >= -8 && y <= 2))
+                    {
+                        Transform parent = GameObject.Find("Floor").transform;
+                        toInstantiate = floorTiles[Random.Range(0, floorTiles.Length)];
+                        GameObject instance = Instantiate(toInstantiate,
+                            new Vector3Int(x, y, 0)
+                            , Quaternion.identity) as GameObject;
+                        instance.transform.parent = parent;
+                    }
+                    if(x == 0 && y == 4)
+                    {
+                        GameObject instance = Instantiate(BossWall, new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    if((x == -2 || x == 2) && (y == 1 || y == -3 || y == -7))
+                    {
+                        Instantiate(Column, new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    if(x == 0 && y == -8)
+                    {
+                        Instantiate(Player[0], new Vector3(x, y, 0), Quaternion.identity);
+                    }
+                    if((x == -4 || x == 4) || (y == -9))
+                    {
+                        Transform parent = GameObject.Find("Walls").transform;
+                        toInstantiate = VoidTile[1];
+                        GameObject instance = Instantiate(toInstantiate,
+                            new Vector3Int(x, y, 0)
+                            , Quaternion.identity) as GameObject;
+                        instance.transform.parent = parent;
+                    }
+                }
+            }
         }
 
         private void DivideTree(TreeNode treeNode, int n) //트리노드 정해준 수만큼 만듦 (재귀 함수)
@@ -283,9 +333,9 @@ namespace DungeonGenerator
             //lineRenderer.SetPosition(3, new Vector2(x, y + height) - mapSize / 2);
             //lineRenderer.SetPosition(4, new Vector2(x, y) - mapSize / 2);
 
-            for (int i = x - (mapSize.x / 2) - 1; i <= (x + width) - (mapSize.x / 2) + 1; i++)
+            for (int i = x - (width / 2) - 1; i <= (x + width) - (width / 2) + 1; i++)
             {
-                for (int j = y - (mapSize.y / 2) - 1; j <= (y + height) - (mapSize.y / 2) + 1; j++)
+                for (int j = y - (height / 2) - 1; j <= (y + height) - (height / 2) + 1; j++)
                 {
                     mapList.Add(new Vector2Int(i, j), None);
                     ceilingList.Add(new Vector2Int(i, j), -1);

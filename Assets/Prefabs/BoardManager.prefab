@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 1970680844797078128}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.5693645, y: 0.406994, z: -0.13683984}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -73,6 +73,7 @@ MonoBehaviour:
   - {fileID: 4794851271256247387, guid: f5d20309527908747966d8c5953f9dc3, type: 3}
   VoidTile:
   - {fileID: 2774524058477166581, guid: 379eb02be92d1b044b7ce6799747b3f7, type: 3}
+  - {fileID: 5477885158144796754, guid: b15c2989690f25448b72ed175065e008, type: 3}
   ExitTile:
   - {fileID: 4282699304648205821, guid: 2edf53da79cef4548ab7be3dd49e17cf, type: 3}
   Player:
@@ -81,6 +82,8 @@ MonoBehaviour:
   - {fileID: 5863130820536592290, guid: 3f521ebe9bffc9d44822e2b9cc37a556, type: 3}
   - {fileID: 6419386056815019910, guid: 3911c8063ef9ffc45a93edb14b1dae15, type: 3}
   - {fileID: 1683197088826629774, guid: 1aac444f2fe546649b780c07ac281f68, type: 3}
+  BossWall: {fileID: 7891588604312450552, guid: bad905e7d4460c6438c4ab04a4537433, type: 3}
+  Column: {fileID: 267258165429173054, guid: 6704248970ed1784e997844d79732418, type: 3}
   mapSize: {x: 30, y: 30}
   maxNode: 3
   minDivideSize: 0.3
@@ -91,6 +94,7 @@ MonoBehaviour:
   rectangle: {fileID: 6652357020870623661, guid: b718291f0470cf945bb4822ddc5978e0, type: 3}
   _gameManager: {fileID: 2634250739783730768, guid: 96d6f5045f646dd44a772183c21c7d5f, type: 3}
   monsterCounter: 10
+  RoomPosition: []
   FloorPosition: []
 --- !u!114 &-2386965727922605425
 MonoBehaviour:

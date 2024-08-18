@@ -21,7 +21,7 @@ public class UIButtons : MonoBehaviour
 
     public void MoveScene()
     {
-        GameManager.instance.stage = 1;
+        GameManager.instance.stage += 1;
         GameManager.Sound.Play("Sounds/Bgm001", "Bgm");
         SceneManager.LoadScene(sceneName);
     }

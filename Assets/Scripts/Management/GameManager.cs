@@ -33,7 +33,6 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-        stage = 0;
         curStage = stage;
         if(instance == null)
         {
