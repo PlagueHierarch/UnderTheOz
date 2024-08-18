@@ -494,6 +494,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   boardManager: {fileID: 1970680844797078128, guid: d1ac814d03945e740b3ab51f0ce43696, type: 3}
+  _soundManager: {fileID: 0}
 --- !u!114 &121409158
 MonoBehaviour:
   m_ObjectHideFlags: 0

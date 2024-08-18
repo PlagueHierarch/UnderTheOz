@@ -57,7 +57,7 @@ public class Player : MovingObject
         if (!_gameManager.playersTurn)
         {
             InputKey();
-            InputKeyDown();
+           // InputKeyDown();
         }
         else if (_gameManager.playersTurn)
         {
@@ -73,7 +73,7 @@ public class Player : MovingObject
 
     }
 
-    private void InputKeyDown()
+   /* private void InputKeyDown()
     {
         if (Input.GetKeyDown(KeyCode.Q))
         {
@@ -83,7 +83,7 @@ public class Player : MovingObject
         {
             Bomb();
         }
-    }
+    }*/
     private void InputKey() //8키 방향 이동 및 공격 함수
     {
         horizontal = 0;
@@ -188,7 +188,7 @@ public class Player : MovingObject
         }
     }
 
-    private void RandomTeleport() //텔레포트 스크롤 스크립트
+    /*private void RandomTeleport() //텔레포트 스크롤 스크립트
     {
         Vector3Int randomPosisiton = _boardManager.RandomPosition(_dungeonGenerator.FloorPosition);
         transform.position = randomPosisiton;
@@ -220,7 +220,7 @@ public class Player : MovingObject
                 }
             }
         }
-    }
+    }*/
 
     protected override void OnCantMove<T>(T component) //벽이나 다른 물체에 막혔을때 호출
     {

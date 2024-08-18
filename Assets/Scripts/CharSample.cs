@@ -49,11 +49,11 @@ public class CharSample : MonoBehaviour
             //curStats.Exp += 5;
         }
 
-        else if (collision.tag == "item_temp")
+        /*else if (collision.tag == "item_temp")
         {
             int itemno = collision.GetComponent<itemSample>().itemNo;
             Debug.Log(itemno);
             items_UI[itemno].GetComponent<SpriteRenderer>().color += new Color(0, 0, 0, 1);
-        }
+        }*/
     }
 }
