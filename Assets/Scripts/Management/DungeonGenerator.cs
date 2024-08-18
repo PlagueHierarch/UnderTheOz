@@ -96,6 +96,15 @@ namespace DungeonGenerator
             GameManager.instance.monsters.Clear();
             Debug.Log("스테이지" + GameManager.instance.stage);
 
+            if(GameManager.instance.stage == 1 || GameManager.instance.stage == 2 || GameManager.instance.stage == 3 ||
+                GameManager.instance.stage == 4 || GameManager.instance.stage == 5)
+            {
+                startGenerate();
+            }
+        }
+
+        private void startGenerate()
+        {
             ReferenceComponent();
             FloorPosition.Clear();
             mapList.Clear();
@@ -110,7 +119,6 @@ namespace DungeonGenerator
             GenerateCeiling(0, 0);
             OnDrawCeiling(0, 0);
             OnDrawWall();
-
         }
 
         private void DivideTree(TreeNode treeNode, int n) //트리노드 정해준 수만큼 만듦 (재귀 함수)

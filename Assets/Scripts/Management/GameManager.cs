@@ -1,6 +1,7 @@
 using DungeonGenerator;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -20,6 +21,7 @@ public class GameManager : MonoBehaviour
     public static GameManager instance = null;
 
     public int stage = 0;
+    int curStage;
 
     [SerializeField] private GameObject boardManager;
     [SerializeField] GameObject turnIndicator;
@@ -31,8 +33,8 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
-
-        stage = 1;
+        stage = 0;
+        curStage = stage;
         if(instance == null)
         {
              instance = this;
@@ -53,9 +55,28 @@ public class GameManager : MonoBehaviour
         Debug.Log("C" + monsters.Count);
         //turnIndicator = GameObject.Find("turnIndicator");
         instance._sound.Init();
-        _sound.Play("Sounds/Bgm001", "Bgm");
+        if(stage == 0)
+        {
+            _sound.Play("Sounds/TitleBgm002", "Bgm");
+        }
+        else if(stage >= 1 && stage <= 5)
+        {
+            _sound.Play("Sounds/Bgm001", "Bgm");
+        }
     }
 
+    private void isScenceLoad()
+    {
+        if (curStage != stage)
+        {
+            ScenceLoader();
+        }
+    }
+
+    private void ScenceLoader()
+    {
+
+    }
 
     void InitGame()
     {
@@ -84,7 +105,6 @@ public class GameManager : MonoBehaviour
             //Debug.Log(GameManager.instance.playersTurn);
             //Debug.Log("»ó´ë ÅÏ");
             StartCoroutine(EnemiesTurn());
-            
         }
     }
 
