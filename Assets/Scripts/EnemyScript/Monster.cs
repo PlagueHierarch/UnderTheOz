@@ -9,7 +9,6 @@ public class Monster : MovingObject
     private Transform target;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float distance;
-    public Color gizmoColor;
 
     protected override void Start()
     {

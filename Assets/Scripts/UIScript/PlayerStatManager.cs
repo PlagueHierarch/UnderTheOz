@@ -42,9 +42,9 @@ public class PlayerStatManager : MonoBehaviour
     private void UpdateBar()
     {
         bars[0].fillAmount = (float)(curStats.HP / curStats.MaxHP);
-        bars[1].fillAmount = (float)(curStats.Exp / curStats.LvUpExp);
+        bars[1].fillAmount = (float)curStats.Exp / (float)curStats.LvUpExp;
        // Debug.Log("hp" + curStats.HP +"/"+ curStats.MaxHP + "=" +  bars[0].fillAmount);
-        //Debug.Log("Exp" + curStats.Exp + "/" + curStats.LvUpExp + "=" + bars[1].fillAmount);
+        Debug.Log("Exp" + curStats.Exp + "/" + curStats.LvUpExp + "=" + bars[1].fillAmount);
         texts[0].text = $"{curStats.HP} / {curStats.MaxHP}";
     }
 
@@ -64,17 +64,24 @@ public class PlayerStatManager : MonoBehaviour
         curStats = ScriptableObject.CreateInstance<PlayerStat>();
         texts[0].text = $"{baseStats.HP} / {baseStats.MaxHP}";
         initStat();
+        UpdateBar();
     }
 
     private void Update()
     {
-        if(curStats.Exp >= curStats.LvUpExp)
+        
+    }
+
+    public void GetExp(int exp)
+    {
+        curStats.Exp += exp;
+
+        if (curStats.Exp >= curStats.LvUpExp)
         {
             LevelUp();
         }
 
         UpdateBar();
-
     }
 
 }

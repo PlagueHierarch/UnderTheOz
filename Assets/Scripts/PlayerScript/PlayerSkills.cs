@@ -26,6 +26,7 @@ public class PlayerSkills : MonoBehaviour
     [SerializeField] private List<TMP_Text> _text;
     [SerializeField] private List<int> _scrollNum;
     [SerializeField] private List<Image> _scrollImage;
+    [SerializeField] private int skillDmg;
 
     private void Awake()
     {
@@ -127,8 +128,8 @@ public class PlayerSkills : MonoBehaviour
                     else if (hit.collider.gameObject.CompareTag("Monster"))
                     {
                         _boomEffect.GetComponent<Animator>().SetTrigger("isBoom");
-                        GameObject target = hit.collider.gameObject;
-                        //target.GetComponent<MonsterStatManager>().curStat.HP -= 20;
+                        GameObject hitTarget = hit.collider.gameObject;
+                        hitTarget.GetComponent<MonsterStatManager>().GetDamaged(skillDmg);
                         Debug.Log(target.gameObject.name + target.gameObject.transform.position + "ÆøÅº ¸ÂÀ½");
 
                     }

@@ -420,7 +420,6 @@ GameObject:
   - component: {fileID: 181429643}
   - component: {fileID: 181429645}
   - component: {fileID: 181429644}
-  - component: {fileID: 181429646}
   m_Layer: 0
   m_Name: E_Image
   m_TagString: Untagged
@@ -486,20 +485,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 181429642}
   m_CullTransparentMesh: 1
---- !u!114 &181429646
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 181429642}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0309f9458597044bb8f88b8c040023, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: 0.06
-  image: {fileID: 0}
 --- !u!1 &244186318
 GameObject:
   m_ObjectHideFlags: 0
@@ -667,6 +652,7 @@ MonoBehaviour:
   - {fileID: 1099857851}
   - {fileID: 181429644}
   - {fileID: 1181687447}
+  skillDmg: 20
 --- !u!1 &392313677
 GameObject:
   m_ObjectHideFlags: 0
@@ -1764,7 +1750,6 @@ GameObject:
   - component: {fileID: 1099857850}
   - component: {fileID: 1099857852}
   - component: {fileID: 1099857851}
-  - component: {fileID: 1099857853}
   m_Layer: 0
   m_Name: W_Image
   m_TagString: Untagged
@@ -1830,20 +1815,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1099857849}
   m_CullTransparentMesh: 1
---- !u!114 &1099857853
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1099857849}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0309f9458597044bb8f88b8c040023, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: 0.06
-  image: {fileID: 0}
 --- !u!1 &1161845268
 GameObject:
   m_ObjectHideFlags: 0
@@ -1989,7 +1960,6 @@ GameObject:
   - component: {fileID: 1181687446}
   - component: {fileID: 1181687448}
   - component: {fileID: 1181687447}
-  - component: {fileID: 1181687449}
   m_Layer: 0
   m_Name: R_Image
   m_TagString: Untagged
@@ -2055,20 +2025,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1181687445}
   m_CullTransparentMesh: 1
---- !u!114 &1181687449
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1181687445}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f0309f9458597044bb8f88b8c040023, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  offset: 0.06
-  image: {fileID: 0}
 --- !u!1 &1267522413
 GameObject:
   m_ObjectHideFlags: 0
@@ -3492,7 +3448,7 @@ MonoBehaviour:
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 0
-  m_FillAmount: 1
+  m_FillAmount: 0
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0

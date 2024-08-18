@@ -240,10 +240,13 @@ public class Player : MovingObject
         }
         else if (hit.collider.gameObject.CompareTag("Monster"))
         {
+            int dmg = PlayerStatManager.instance.curStats.Dmg;
+
             GameManager.Sound.Play("Sounds/HitMonster001");
             _animator.SetTrigger("isAttack");
             GameObject target = hit.collider.gameObject;
-            //target.GetComponent<MonsterStatManager>().curStat.HP -= 20;
+
+            target.GetComponent<MonsterStatManager>().GetDamaged(dmg);
             Debug.Log("Àû °ø°Ý");
         }
     }
