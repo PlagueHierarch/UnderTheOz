@@ -22,7 +22,11 @@ public class Player : MovingObject
     private DungeonGenerator.DungeonGenerator _dungeonGenerator;
     private BoardManager _boardManager;
     private SpriteRenderer _boomSprite;
-    
+    private int horizontal = 0;
+    private int vertical = 0;
+    [SerializeField] private PlayerStat _playerStat;
+    public PlayerStat curState { get { return _playerStat; }  set { _playerStat = value; } }
+
     private void ReferenceComponent()
     {
         _boomSprite = _boomEffect.GetComponent<SpriteRenderer>();
@@ -82,8 +86,8 @@ public class Player : MovingObject
     }
     private void InputKey() //8키 방향 이동 및 공격 함수
     {
-        int horizontal = 0;
-        int vertical = 0;
+        horizontal = 0;
+        vertical = 0;
 
         if (Input.GetKey(KeyCode.Keypad8))
         {
@@ -210,7 +214,7 @@ public class Player : MovingObject
                 {
                     _boomEffect.GetComponent<Animator>().SetTrigger("isBoom");
                     GameObject target = hit.collider.gameObject;
-                    target.GetComponent<Monster>(); //몬스터 체력 감소
+                    //target.GetComponent<MonsterStatManager>().curStat.HP -= 20;
                     Debug.Log(target.gameObject.name + target.gameObject.transform.position + "폭탄 맞음");
 
                 }
@@ -220,11 +224,24 @@ public class Player : MovingObject
 
     protected override void OnCantMove<T>(T component) //벽이나 다른 물체에 막혔을때 호출
     {
-        GameObject other = component as GameObject;
-        if(other.CompareTag("Monster"))
+        //MonsterStatManager other = component as MonsterStatManager;
+        Debug.Log("가로 막힘");
+        
+        Vector2 playerPosition = transform.position;
+        Vector2 rayPosition;
+        RaycastHit2D hit;
+        rayPosition = playerPosition + new Vector2(horizontal, vertical);
+        hit = Physics2D.Linecast(playerPosition, rayPosition, blockingLayer);
+        if (hit.collider == null)
         {
-            //몬스터 체력 감소
+            return;
+        }
+        else if (hit.collider.gameObject.CompareTag("Monster"))
+        {
             _animator.SetTrigger("isAttack");
+            GameObject target = hit.collider.gameObject;
+            //target.GetComponent<MonsterStatManager>().curStat.HP -= 20;
+            Debug.Log("적 공격");
         }
     }
     protected override void OnCanMove<T>(T component)
