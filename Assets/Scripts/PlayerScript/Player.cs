@@ -132,7 +132,7 @@ public class Player : MovingObject
 
         if (horizontal != 0 || vertical != 0)
         {
-            
+            GameManager.instance.playersTurn = false;
             if (horizontal < 0)
             {
                 _animator.SetInteger("Direction", -1); //음수가 왼쪽 양수가 오른쪽

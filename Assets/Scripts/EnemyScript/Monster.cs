@@ -9,9 +9,13 @@ public class Monster : MovingObject
     private Transform target;
     [SerializeField] LayerMask playerLayer;
     [SerializeField] float distance;
+    [SerializeField] private GameObject _animation;
+
+    private Animator _animator;
 
     protected override void Start()
     {
+        _animator = _animation.GetComponent<Animator>();
         base.Start();
     }
 
@@ -36,6 +40,17 @@ public class Monster : MovingObject
         else if (target.transform.position.x < gameObject.transform.position.x) horizontal = -1;
         else horizontal = 0;
 
+        if(horizontal > 0)
+        {
+            _animation.GetComponent<SpriteRenderer>().flipX = false;
+        }
+        else
+        {
+            _animation.GetComponent<SpriteRenderer>().flipX=true;
+        }
+
+        _animator.SetTrigger("isMove");
+
         AttemptMove<Obstacle>(horizontal, vertical);
             
     }
@@ -56,7 +71,8 @@ public class Monster : MovingObject
             distance = Vector2.Distance(target.transform.position, gameObject.transform.position);
             //Debug.Log(distance);
             if (distance > 1.5f)
-                CalDist();
+
+            CalDist();
             GameManager.instance.monstersEnd.Add(gameObject);
         }
 
@@ -87,10 +103,9 @@ public class Monster : MovingObject
 
     protected override void OnCantMove<T>(T component)
     {
-
     }
     protected override void OnCanMove<T>(T component)
     {
-
+    
     }
 }
