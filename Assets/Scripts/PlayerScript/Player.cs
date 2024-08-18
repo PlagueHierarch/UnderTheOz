@@ -153,6 +153,7 @@ public class Player : MovingObject
     {
         if(other.gameObject.layer == 8)
         {
+
             Debug.Log("°è´Ü");
             _gameManager.stage += 1;
             /*if(_gameManager.stage == 1)
@@ -175,9 +176,13 @@ public class Player : MovingObject
             {
                 SceneManager.LoadScene("Stage 5");
             }*/
-             if (_gameManager.stage > 5)
+            if (_gameManager.stage == 6)
             {
                 SceneManager.LoadScene("Stage Boss");
+            }
+            else if(_gameManager.stage == 7)
+            {
+                GameManager.Sound.Play("Sounds/BigDoor001");
             }
             else
             {
