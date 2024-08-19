@@ -132,7 +132,7 @@ public class Player : MovingObject
 
         if (horizontal != 0 || vertical != 0)
         {
-            
+            GameManager.instance.playersTurn = false;
             if (horizontal < 0)
             {
                 _animator.SetInteger("Direction", -1); //음수가 왼쪽 양수가 오른쪽
@@ -141,7 +141,7 @@ public class Player : MovingObject
             {
                 _animator.SetInteger("Direction", 1);
             }
-            AttemptMove<Obstacle>(horizontal, vertical);
+            AttemptMove<Monster>(horizontal, vertical);
         }
         if(horizontal == 0 &&  vertical == 0)
         {
@@ -153,6 +153,7 @@ public class Player : MovingObject
     {
         if(other.gameObject.layer == 8)
         {
+
             Debug.Log("계단");
             _gameManager.stage += 1;
             /*if(_gameManager.stage == 1)
@@ -175,9 +176,13 @@ public class Player : MovingObject
             {
                 SceneManager.LoadScene("Stage 5");
             }*/
-             if (_gameManager.stage > 5)
+            if (_gameManager.stage == 6)
             {
                 SceneManager.LoadScene("Stage Boss");
+            }
+            else if(_gameManager.stage == 7)
+            {
+                GameManager.Sound.Play("Sounds/BigDoor001");
             }
             else
             {
@@ -226,29 +231,44 @@ public class Player : MovingObject
 
     protected override void OnCantMove<T>(T component) //벽이나 다른 물체에 막혔을때 호출
     {
-        //MonsterStatManager other = component as MonsterStatManager;
+        Monster other = component as Monster;
         Debug.Log("가로 막힘");
         
-        Vector2 playerPosition = transform.position;
-        Vector2 rayPosition;
-        RaycastHit2D hit;
-        rayPosition = playerPosition + new Vector2(horizontal, vertical);
-        hit = Physics2D.Linecast(playerPosition, rayPosition, blockingLayer);
-        if (hit.collider == null)
-        {
-            return;
-        }
-        else if (hit.collider.gameObject.CompareTag("Monster"))
+        if(other != null)
         {
             int dmg = PlayerStatManager.instance.curStats.Dmg;
 
             GameManager.Sound.Play("Sounds/HitMonster001");
             _animator.SetTrigger("isAttack");
-            GameObject target = hit.collider.gameObject;
+            GameObject target = other.gameObject;
 
             target.GetComponent<MonsterStatManager>().GetDamaged(dmg);
-            Debug.Log("적 공격");
+            Debug.Log("플레이어 공격");
         }
+        else
+        {
+
+        }
+        //Vector2 playerPosition = transform.position;
+        //Vector2 rayPosition;
+        //RaycastHit2D hit;
+        //rayPosition = playerPosition + new Vector2(horizontal, vertical);
+        //hit = Physics2D.Linecast(playerPosition, rayPosition, blockingLayer);
+        //if (hit.collider == null)
+        //{
+        //    return;
+        //}
+        //else if (hit.collider.gameObject.CompareTag("Monster"))
+        //{
+        //    int dmg = PlayerStatManager.instance.curStats.Dmg;
+
+        //    GameManager.Sound.Play("Sounds/HitMonster001");
+        //    _animator.SetTrigger("isAttack");
+        //    GameObject target = hit.collider.gameObject;
+
+        //    target.GetComponent<MonsterStatManager>().GetDamaged(dmg);
+        //    Debug.Log("플레이어 공격");
+        //}
     }
     protected override void OnCanMove<T>(T component)
     {

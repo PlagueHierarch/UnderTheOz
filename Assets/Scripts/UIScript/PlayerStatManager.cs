@@ -83,5 +83,9 @@ public class PlayerStatManager : MonoBehaviour
 
         UpdateBar();
     }
-
+    public void GetDamaged(int dmg)
+    {
+        curStats.HP -= dmg;
+        Debug.Log(curStats.HP);
+    }
 }

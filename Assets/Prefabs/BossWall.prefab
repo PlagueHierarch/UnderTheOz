@@ -107,6 +107,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BigDoor
       objectReference: {fileID: 0}
+    - target: {fileID: 485954255985026219, guid: 439227f3903c2a6499ae3870f0867a32, type: 3}
+      propertyPath: m_TagString
+      value: BigDoor
+      objectReference: {fileID: 0}
     - target: {fileID: 4305401760815155381, guid: 439227f3903c2a6499ae3870f0867a32, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
